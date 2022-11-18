@@ -10,6 +10,7 @@ void	stack_test();
 int	main()
 {
 	vector_test();
+	void hello();
 	stack_test();
 //	map_test();
 }
