@@ -11,6 +11,7 @@ int	main()
 {
 	vector_test();
 	void hello();
+	int x();
 	void vect();
 	stack_test();
 //	map_test();
