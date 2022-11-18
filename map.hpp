@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/18 11:27:54 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/18 15:00:37 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ namespace ft
 			//Member classes
 			class value_compare : std::binary_function<value_type, value_type, bool>
 			{
-				4protected:
+				protected:
 					Compare comp;
 					value_compare(Compare c) : comp(c) {}
 				public:

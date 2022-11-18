@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/17 20:31:18 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/18 15:45:59 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iterator>
 #include <cmath>
 #include <functional>
+#include <exception>
 
 namespace ft
 {
@@ -433,4 +434,34 @@ namespace ft
 
 	};
 
+	//Pair
+	template <typename T1, typename T2>
+	class pair
+	{
+		public:
+			pair() : first(), second() {};
+			pair(const T1& a, const T2& b) : first(a), second(b) {};
+			pair(const pair<T1, T2>& copy) : first(copy.first), second(copy.second) {};
+			template <typename U, typename V>
+			pair(const pair<U, V>& copy) : first(copy.first), second(copy.second) {};
+			~pair() {};
+			pair& operator=(const pair& assign)
+			{
+				if (this != &assign)
+				{
+					first = assign.first;
+					second = assign.second;
+				}
+				return (*this);
+			};
+
+		T1 first;
+		T2 second;
+	};
+
+	//Make_pair
+	template <typename T1, typename T2>
+	pair<T1, T2> make_pair(T1 a, T2 b)
+	{ return pair<T1, T2>(a, b); }
 }
+
