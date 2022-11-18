@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/18 15:45:59 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:37:36 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -463,5 +463,14 @@ namespace ft
 	template <typename T1, typename T2>
 	pair<T1, T2> make_pair(T1 a, T2 b)
 	{ return pair<T1, T2>(a, b); }
+
+	//Swap
+	template <typename U>
+	void swap(U& a, U& b)
+	{
+		U tmp = a;
+		a = b;
+		b = tmp;
+	}
 }
 

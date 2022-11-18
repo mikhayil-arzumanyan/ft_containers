@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/18 15:00:37 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/18 17:38:25 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,9 +158,6 @@ namespace ft
 			size_type max_size() const
 			{
 				return m_allocPair.max_size();
-			// if (sizeof(value_type) == 1)
-			// 	return static_cast<size_type>(std::pow(2.0, 64.0) / 2.0) - 1;
-			// return static_cast<size_type>(std::pow(2.0, 64.0) / static_cast<double>(sizeof(value_type))) - 1;
 			}
 
 // __ Element Access
@@ -176,12 +173,41 @@ namespace ft
 
 // __ Modifiers
 
-// __ Private Member Function
+			//Insert one element
+			ft::pair<iterator, bool> insert (const value_type& val)
+			{
+				Node* elemIsPresent = searchNode(m_root, val.first);
+				if (elemIsPresent)
+					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem, m_comp), false);
+				++m_size;
+				return ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem, m_comp), true);
+			}
 
-		private:
-			template <typename T1, typename T2>
-			pair<T1, T2> make_pair(T1 a, T2 b) const
-			{ return pair<T1, T2>(a, b); }
+			//Insert one element starting from a certain position
+			iterator insert (iterator position, const value_type& val)
+			{
+				iterator prev(position);
+				--prev;
+				while (prev != end() && prev->firts >= val.first)
+				{
+					--position;
+					--prev;
+				}
+				else if (position->first < val.first)
+				{
+					iterator next(position);
+					++next;
+					while (next != end() && next->first <= val.first)
+					{
+						++position;
+						++next;
+					}
+				}
+				if (position != end() && val.first == position->first)
+					return position;
+				++m_size;
+				return iterator(insertNode(position.getNode(), val), m_lastElem, m_comp);
+			}
 	};
 
 }
