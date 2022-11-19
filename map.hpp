@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/19 17:52:25 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/19 18:23:48 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,6 +366,28 @@ namespace ft
 				if (it != end())
 					++next;
 				return make_pair<const_iterator, const_iterator>(it, next);
+			}
+
+// __ AVL Binary Search Tree
+
+		private:
+
+			//Creates a new node and assign pair.
+			Node* createNode(const value_type& pair)
+			{
+				Node* newNode = m_allocNode.allocate(1);
+				m_allocPair.construct(&newNode->content, pair);
+				newNode->parent = 0;
+				newNode->left = 0;
+				newNode->right = 0;
+				return newNode;
+			}
+
+			//Calls the destructor.
+			void deallocateNode(Node* del)
+			{
+				m_allocPair.destroy(&del->content);
+				m_allocNode.deallocate(del, 1);
 			}
 	};
 
