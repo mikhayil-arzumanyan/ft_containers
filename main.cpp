@@ -3,13 +3,13 @@
 #include <string>
 #include <map>
 
-void	vector_test();
-void	stack_test();
-//void	map_test();
+//void	vector_test();
+//void	stack_test();
+void	map_test();
 
 int	main()
 {
-	vector_test();
-	stack_test();
-//	map_test();
+//	vector_test();
+//	stack_test();
+	map_test();
 }

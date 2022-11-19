@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/18 17:38:25 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/19 15:32:48 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace ft
 		typename Key,
 		typename T,
 		typename Compare = std::less<Key>,
-		typename Allocator = std::allocator<std::pair<const Key, T>> >
+			typename Allocator = std::allocator<std::pair<const Key, T> > >
 	class map
 	{
 		private:
@@ -186,12 +186,15 @@ namespace ft
 			//Insert one element starting from a certain position
 			iterator insert (iterator position, const value_type& val)
 			{
-				iterator prev(position);
-				--prev;
-				while (prev != end() && prev->firts >= val.first)
+				if (position->first > val.firs)
 				{
-					--position;
+					iterator prev(position);
 					--prev;
+					while (prev != end() && prev->first >= val.first)
+					{
+						--position;
+						--prev;
+					}
 				}
 				else if (position->first < val.first)
 				{
@@ -207,6 +210,15 @@ namespace ft
 					return position;
 				++m_size;
 				return iterator(insertNode(position.getNode(), val), m_lastElem, m_comp);
+			}
+
+			//Insert all elements
+			template <typename InputIt>
+			void insert (InputIt first, InputIt last,
+			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0)
+			{
+				while (first != last)
+					insert(*first++);
 			}
 	};
 
