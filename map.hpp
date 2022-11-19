@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/19 15:56:32 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/19 17:52:25 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ namespace ft
 	class map
 	{
 		private:
-			//Attributes
+			//Attributes.
 			struct Node
 			{
 				std::pair<const Key, T>		content;
@@ -38,7 +38,7 @@ namespace ft
 				Node*						right;
 			};
 		public:
-			//Member Type
+			//Member Type.
 			typedef Key									key_type;
 			typedef T									mapped_type;
 			typedef std::pair<const Key, T>				value_type;
@@ -55,7 +55,7 @@ namespace ft
 			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, false>	reverse_iterator;
 			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, true>	const_reverse_iterator;
 		public:
-			//Member classes
+			//Member classes.
 			class value_compare : std::binary_function<value_type, value_type, bool>
 			{
 				protected:
@@ -73,7 +73,7 @@ namespace ft
 					friend class map<key_type, value_type, key_compare, allocator_type>;
 			};
 		private:
-			//Attributes
+			//Attributes.
 			Node*					m_root;
 			Node*					m_lastElem;
 			size_type				m_size;
@@ -84,7 +84,7 @@ namespace ft
 // __ Constructors and Destructor
 
 		public:
-			//Default
+			//Default.
 			explicit map(const Compare& comp,
 			const Allocator& alloc = Allocator()) : m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
@@ -94,7 +94,7 @@ namespace ft
 				m_lastElem->right = m_lastElem;
 			}
 
-			//Range
+			//Range.
 			template<typename InputIt>map(InputIt first, InputIt last,
 			const Compare& comp = Compare(), const Allocator& alloc = Allocator(),
 			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0) :
@@ -108,7 +108,7 @@ namespace ft
 					insert(*first);
 			}
 
-			//Copy
+			//Copy.
 			map(const map& other) : 
 			m_size(0), m_allocPair(other.m_allocPair), m_comp(other.m_comp), m_allocNode(other.m_allocNode)
 			{
@@ -120,7 +120,7 @@ namespace ft
 					insert(*it);
 			}
 
-			//Operator=
+			//Operator=.
 			map &operator=(const map &other)
 			{
 				map tmp(other);
@@ -128,10 +128,10 @@ namespace ft
 				return *this;
 			}
 
-			//Destroy
+			//Destroy.
 			~map()
 			{
-//				clear();
+				clear();
 				deallocateNode(m_lastElem);
 			}
 
@@ -148,13 +148,13 @@ namespace ft
 
 // __ Capacity
 
-			//Empty
+			//Empty.
 			bool empty() const 			{ return m_size == 0; }
 
-			//Size
+			//Size.
 			size_type size() const 		{ return m_size; }
 
-			//Max
+			//Max.
 			size_type max_size() const
 			{
 				return m_allocPair.max_size();
@@ -173,7 +173,7 @@ namespace ft
 
 // __ Modifiers
 
-			//Insert one element
+			//Insert one element.
 			ft::pair<iterator, bool> insert (const value_type& val)
 			{
 				Node* elemIsPresent = searchNode(m_root, val.first);
@@ -183,7 +183,7 @@ namespace ft
 				return ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem, m_comp), true);
 			}
 
-			//Insert one element starting from a certain position
+			//Insert one element starting from a certain position.
 			iterator insert (iterator position, const value_type& val)
 			{
 				if (position->first > val.firs)
@@ -212,7 +212,7 @@ namespace ft
 				return iterator(insertNode(position.getNode(), val), m_lastElem, m_comp);
 			}
 
-			//Inserts all elements
+			//Inserts all elements.
 			template <typename InputIt>
 			void insert (InputIt first, InputIt last,
 			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0)
@@ -221,7 +221,7 @@ namespace ft
 					insert(*first++);
 			}
 
-			//Removes one element
+			//Removes one element.
 			void erase (iterator position)
 			{
 				deleteNode(position.getNode(), position->first);
@@ -245,6 +245,127 @@ namespace ft
 					++first;
 					erase(tmp);
 				}
+			}
+
+			//Swaps the constent of this one.
+			void swap (map& a)
+			{
+				swap(m_root, a.m_root);
+				swap(m_lastElem, a.m_lastElem);
+				swap(m_size, a.m_size);
+				swap(m_comp, a.m_comp);
+				swap(m_allocPair, a.m_allocPair);
+				swap(m_allocNode, a.m_allocNode);
+			}
+
+			//Removes all elements.
+			void clear() { erase(begin(), end()); }
+
+// __ Observers
+
+			//Return key comparison object.
+			Compare key_comp() const { return m_comp; }
+
+			//Return value comparison object.
+			value_compare value_comp() const { return value_compare(m_comp); }
+
+// __ Operations
+
+			//Searches the container for an element.
+			iterator find(const Key& k)
+			{
+				Node* tmp = searchNode(m_root, k);
+				if (tmp)
+					return iterator(tmp, m_lastElem, m_comp);
+				return end();
+			}
+
+			//Searches the container for an element (const).
+			const_iterator find(const Key& k) const
+			{
+				Node* tmp = searchNode(m_root, k);
+				if (tmp)
+					return iterator(tmp, m_lastElem, m_comp);
+				return end();
+			}
+
+			//Count elements with a specific key.
+			size_type count (const Key& k) const
+			{
+				Node* tmp = searchNode(m_root, k);
+				return tmp ? true : false;
+			}
+
+			//Return the element whose key is not considered to go before k.
+			iterator lower_bound(const Key& k)
+			{
+				iterator it = begin();
+				for (; it != end(); ++it)
+					if (!m_comp(it->first, k))
+						break;
+				return it;
+			}
+
+			//Return the element whose key is not considered to go before k (const).
+			const_iterator lower_bound(const Key& k) const
+			{
+				const_iterator it = begin();
+				for (; it != end(); ++it)
+					if (!m__comp(it->first, k))
+						break;
+				return it;
+			}
+
+			//Return for the element whose key is considered to go after k.
+			iterator upper_bound(const Key& k)
+			{
+				iterator it = begin();
+				for (; it != end(); ++it)
+					if (!m_comp(k, it->first))
+						break;
+				return it;
+			}
+
+			//Return for the element whose key is considered to go after k (const).
+			const_iterator upper_bound(const Key& k) const
+			{
+				iterator it = begin();
+				for (; it != end(); ++it)
+					if (!m_comp(k, it->first))
+						break;
+				return it;
+			}
+
+			//Returns the bounds of a range.
+			pair<iterator, iterator> equal_range(const Key& k)
+			{
+				iterator it = upper_bound(k);
+				if (it != begin())
+				{
+					--it;
+					if (m_comp(it->first, k) || m_comp(k, it->first))
+						++it;
+				}
+				iterator next(it);
+				if (it != end())
+					++next;
+				return make_pair<iterator, iterator>(it, next);
+			}
+
+			//Returns the bounds of a range.
+			pair<const_iterator, const_iterator> equal_range(const Key& k) const
+			{
+				const_iterator it = upper_bound(k);
+				if (it != begin())
+				{
+					--it;
+					if (m_comp(it->forst, k) || m_comp(k, it->first))
+						++it;
+				}
+				const_iterator next(it);
+				if (it != end())
+					++next;
+				return make_pair<const_iterator, const_iterator>(it, next);
 			}
 	};
 
