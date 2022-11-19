@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/19 15:32:48 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/19 15:56:32 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,13 +212,39 @@ namespace ft
 				return iterator(insertNode(position.getNode(), val), m_lastElem, m_comp);
 			}
 
-			//Insert all elements
+			//Inserts all elements
 			template <typename InputIt>
 			void insert (InputIt first, InputIt last,
 			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0)
 			{
 				while (first != last)
 					insert(*first++);
+			}
+
+			//Removes one element
+			void erase (iterator position)
+			{
+				deleteNode(position.getNode(), position->first);
+				--m_size;
+			}
+
+			//Removes one element on a specific key.
+			size_type ertase (const Key& k)
+			{
+				size_type ret = deleteNode(m_root, k);
+				m_size -= ret;
+				return ret;
+			}
+
+			//Removes a range of elements.
+			void erase (iterator first, iterator last)
+			{
+				while (first != last)
+				{
+					iterator tmp(first);
+					++first;
+					erase(tmp);
+				}
 			}
 	};
 
