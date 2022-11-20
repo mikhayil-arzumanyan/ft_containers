@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/20 18:02:13 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/20 19:00:09 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,6 +480,38 @@ namespace ft
 				Node* del = searchNode(deletePos, k);
 				if (!del)
 					return false;
+				if (!del->parent)
+				{
+					if (del->left == m_lastElem && del->right == m_lastElem)
+					{
+						m_root = m_lastElem;
+						m_lastElem->left = m_lastElem;
+						m_lastElem->right = m_lastElem;
+					}
+					else if (del->left && del->right == m_lastElem)
+					{
+						balanceNode = del->parent;
+						m_root = del->left;
+						del->left->parent = 0;
+						m_lastElem->left = del->left;
+						del->left->right = m_lastElem;
+					}
+					else if (del->left == m_lastElem && del->right)
+					{
+						balanceNode = del->parent;
+						m_root = del->right;
+						del->right->parent = 0;
+						m_lastElem->right = del->right;
+						del->right->left = m_lastElem;
+					}
+					else
+					{
+						Node* maxNode = searchMaxNode(del->Left);
+						m_allocPair.destroy(&del->content);
+						m_allocPair.construct(&del->content, maxNode->content);
+						return deleteNode(del->left, maxNode->content.first);
+					}
+				}
 			}
 	};
 
