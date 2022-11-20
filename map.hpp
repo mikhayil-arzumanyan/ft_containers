@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/20 19:00:09 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/20 19:40:36 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -512,7 +512,56 @@ namespace ft
 						return deleteNode(del->left, maxNode->content.first);
 					}
 				}
+				else if ((!del->left || del->left == m_lastElem) && (!del->right || del->right == m_lastElem))
+				{
+					balanceNode = del->parent;
+					Node* linkToParent = 0;
+					if (del->left == m_lastElem || del->right == m_lastElem)
+					{
+						linkToParent = m_lastElem;
+						del->content.first <= del->parent->content.first ? m_lastElem->right = del->parent :
+							m_lastElem->left = del->parent;
+					}
+					del->content.first <= del->parent->content.first ? del->parent->left = del->parent :
+						del->parent->right = linkToParent;
+				}
+				else if ((del->left && del->left != m_lastElem) && (!del->right || del->right == m_lastElem))
+				{
+					balanceNode = del->parent;
+					del->content.first <= del->parent->content.first ? del->parent->left = del->left :
+						del->parent->right = del->left;
+					del->left->parent = del->parent;
+					if (del->right == m_lastElem)
+					{
+						m_lastElem->left = del->left;
+						del->left->right = m_lastElem;
+					}
+				}
+				else if ((!del->left || del->left == m_lastElem) && del->right && del->right != m_lastElem)
+				{
+					balanceNode = del->paernt;
+					del->content.first <= del->parent->content.first ? del->parent->left = del->right :
+						del->parent->right = del->right;
+					del->right->parent = del->parent;
+					if (del->left == m_lastElem)
+					{
+						m_lastElem->right = del->right;
+						del->right->left = m_lastElem;
+					}
+				}
+				else
+				{
+					Node* maxNode = searchMaxNode(del->left);
+					m_allocPair.destroy(&del->content);
+					m_allocPair.construct(&del->content, maxNode->content);
+					return deleteNode(del->left, maxNode->content.first);
+				}
+				balanceTheTree(&m_root, balanceNode);
+				deallocateNode(del);
+				return true;
 			}
+
+			//
 	};
 
 }
