@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/20 19:40:36 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/20 20:27:39 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -561,7 +561,37 @@ namespace ft
 				return true;
 			}
 
-			//
+			// Compares the heights of left and right subtrees.
+			int balanceOfSubtrees(Node* node)
+			{
+				if (!node)
+					return 0;
+				return heightTree(node->left, 1) - heightTree(node->right, 1);
+			}
+
+			// RIGHT ROTATION
+			// Does a right rotation between a node and his left child. The left child will go up and take 
+			// the position of this node, and this node will become the right child of the node going up.
+			void rotateRight(Node** root, Node* nodeGoingDown)
+			{
+				Node* nodeGoingUp = nodeGoingDown->left;
+				nodeGoingDown->left = nodeGoingUp->right;
+				if (nodeGoingUp->right)
+					nodeGoingUp->right->parent = nodeGoingDown;
+				nodeGoingUp->right = nodeGoingDown;
+				nodeGoingUp->parent = nodeGoingDown->parent;
+				if (nodeGoingDown->parent && nodeGoingDown->parent->left == nodeGoingDown)
+					nodeGoingDown->parent->left = nodeGoingUp;
+				else if (nodeGoingDown->parent)
+					nodeGoingDown->parent->right = nodeGoingUp;
+				nodeGoingDown->parent = nodeGoingUp;
+				if (!nodeGoingUp->parent)
+					*root = nodeGoingUp;
+			}
+
+			// LEFT ROTATION
+			// Does a left rotation between a node and his right child. The right child will go up and take
+			// the position of this node; and this node will become the left child of the node going up.
 	};
 
 }
