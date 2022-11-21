@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/20 20:27:39 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/21 16:32:25 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -592,6 +592,22 @@ namespace ft
 			// LEFT ROTATION
 			// Does a left rotation between a node and his right child. The right child will go up and take
 			// the position of this node; and this node will become the left child of the node going up.
+			void rotateLeft(Node** root, Node* nodeGoingDown)
+			{
+				Node* nodeGoingUp = nodeGoingDown->right;
+				nodeGoingDown->right = nodeGoingUp->left;
+				if (nodeGoingUp->left)
+					nodeGoingUp->left->parent = nodeGoingDown;
+				nodeGoingUp->left = nodeGoingDown;
+				nodeGoingUp->parent = nodeGoingDown->parent;
+				if (nodeGoingDown->parent && nodeGoingDown->parent->left == nodeGoingDown)
+					nodeGoingDown->parent->left = nodeGoingUp;
+				else if (nodeGoingDown->parent)
+					nodeGoingDown->parent->right = nodeGoingUp;
+				nodeGoingDown->parent = nodeGoingUp;
+				if (!nodeGoingUp->parent)
+					*root = nodeGoingUp;
+			}
 	};
 
 }
