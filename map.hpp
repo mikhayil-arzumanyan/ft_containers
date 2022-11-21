@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/21 16:32:25 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/21 18:15:25 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,11 @@ namespace ft
 			}
 
 // __ Element Access
+
+			// At
+			T& at(const Key& key)
+			{}
+
 
 			T& operator[](const Key& k)
 			{
@@ -608,6 +613,10 @@ namespace ft
 				if (!nodeGoingUp->parent)
 					*root = nodeGoingUp;
 			}
+
+			// Starts from a node in the AVL tree, and will check for this node and all the parent's node
+            //  until root if their balance (height of left and right subtree) is correct. If not, a rotation
+            //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
 	};
 
 }
