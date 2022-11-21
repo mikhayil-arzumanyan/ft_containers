@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/19 18:23:52 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/21 20:25:35 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 namespace ft
 {
-	//Is_integral
+	// Is integral.
 	template <typename T>
 	struct is_integral { static const bool value = false; };
 
@@ -53,7 +53,7 @@ namespace ft
 	template <>
 	struct is_integral<unsigned long long> { static const bool value = true; };
 
-	//Use a boolean to typedef eiter type 1 or type 2.
+	// Use a boolean to typedef eiter type 1 or type 2.
 	template <bool isConst, typename isFalse, typename isTrue>
 	struct chooseConst {};
 
@@ -65,13 +65,15 @@ namespace ft
 	struct chooseConst<true, isFalse, isTrue>
 	{ typedef isTrue type; };
 
-	//Enable_if
+	// Enable if.
 	template <bool B>
 	struct enable_if {};
 
 	template <>
 	struct enable_if<true> { typedef int type; };
 
+	// Map iterator.
+	
 	// Key			Type of key elements.
 	// T			Type of mapped elements.
 	// Compare		The predicate used to sort the bynary tree.
@@ -99,11 +101,11 @@ namespace ft
 
 // __ Constructors & Destructor
 
-			//Default
+			// Default.
 			map_iterator(nodePtr node = 0, nodePtr lastElem = 0, const key_compare& comp = key_compare()) :
 				m_node(node), m_lastElem(lastElem), m_comp(comp) {}
 
-			//Copy
+			// Copy.
 			map_iterator(const map_iterator<Key, T, Compare, Node, false>& copy)
 			{
 				m_node = copy.getNode();
@@ -111,10 +113,10 @@ namespace ft
 				m_comp = copy.getCompare();
 			}
 
-			//Destroy
+			// Destroy.
 			~map_iterator() {}
 
-			//Operator=
+			// Operator=.
 			map_iterator& operator=(const map_iterator& assign)
 			{
 				if (this != assign.m_node)
@@ -249,6 +251,7 @@ namespace ft
 			}
 	};
 
+	// Revers map iterator.
 	template<typename Key, typename T, typename Compare, typename Node, bool B>
 	class rev_map_iterator
 	{
@@ -270,11 +273,11 @@ namespace ft
 
 // __ Constructors & Destructor
 
-			//Default
+			// Default.
 			rev_map_iterator(nodePtr node = 0, nodePtr lastElem = 0, const key_compare& comp = key_compare()) :
 				m_node(node), m_lastElem(lastElem), m_comp(comp) {}
 
-			//Copy
+			// Copy.
 			rev_map_iterator(const rev_map_iterator<Key, T, Compare, Node, false>& copy)
 			{
 				m_node = copy.getNonConstNode();
@@ -282,7 +285,7 @@ namespace ft
 				m_comp = copy.getCompare();
 			}
 
-			//Convert
+			// Convert.
 			explicit rev_map_iterator(map_iterator<Key, T, Compare, Node, false> copy)
 			{
 				--copy;
@@ -291,10 +294,10 @@ namespace ft
 				m_comp = copy.getCompare();
 			}
 
-			//Destroy
+			// Destroy.
 			~rev_map_iterator() {}
 
-			//Operator=
+			// Operator=.
 			rev_map_iterator& operator=(const rev_map_iterator& assign)
 			{
 				if (this != &assign)
@@ -434,7 +437,7 @@ namespace ft
 
 	};
 
-	//Pair
+	// Pair.
 	template <typename T1, typename T2>
 	class pair
 	{
@@ -453,18 +456,49 @@ namespace ft
 					second = assign.second;
 				}
 				return (*this);
-			};
+			}
 
 		T1 first;
 		T2 second;
 	};
 
-	//Make_pair
+	// Pair operators.
+	template <typename T1, typename T2>
+	bool operator==(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{ return (lhs.first == rhs.first && lhs.second == rhs.second); }
+
+	template <typename T1, typename T2>
+	bool operator!=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{ return (!(lhs == rhs)); }
+
+	template <typename T1, typename T2>
+	bool operator<(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{
+		if (lhs.first < rhs.first)
+			return (true);
+		else if (lhs.first == rhs.first)
+			return (lhs.second < rhs.second);
+		return (false);
+	}
+
+	template <typename T1, typename T2>
+	bool operator<=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{ return (!(rhs < lhs)); }
+	
+	template <typename T1, typename T2>
+	bool operator>(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{ return (rhs < lhs); }
+
+	template <typename T1, typename T2>
+	bool operator>=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
+	{ return (!(lhs < rhs)); }
+
+	// Make pair.
 	template <typename T1, typename T2>
 	pair<T1, T2> make_pair(T1 a, T2 b)
 	{ return pair<T1, T2>(a, b); }
 
-	//Swap
+	// Swap.
 	template <typename U>
 	void swap(U& a, U& b)
 	{

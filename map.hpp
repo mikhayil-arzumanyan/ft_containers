@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/21 18:15:25 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/21 19:14:46 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,9 +164,25 @@ namespace ft
 
 			// At
 			T& at(const Key& key)
-			{}
+			{
+				iterator it;
+				it = this->find(key);
+				if (it == this->end())
+					throw std::out_of_range("map::at: key not found");
+				return (it->second);
+			}
 
+			// AT (const)
+			const T& at(const Key& key) const
+			{
+				iterator it;
+				it = this->find(key);
+				if (it == this->end())
+					throw std::out_of_range("map::at: key not found");
+				return (it->second);
+			}
 
+			// Operator []
 			T& operator[](const Key& k)
 			{
 				Node* tmp = searchNode(m_root, k);
@@ -617,6 +633,28 @@ namespace ft
 			// Starts from a node in the AVL tree, and will check for this node and all the parent's node
             //  until root if their balance (height of left and right subtree) is correct. If not, a rotation
             //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
+			void balanceTheTree(Node** root, Node* node)
+			{
+				while (node)
+				{
+					int balance;
+					if ((balance = balanceOfSubtrees(node)) < -1 && balanceOfSubtrees(node->right) < 0)
+						rotateLeft(root, node);
+					else if (balance < -1 && balanceOfSubtrees(node->right) >= 0)
+					{
+						rotateRight(root, node->right);
+						rotateLeft(root, node);
+					}
+					else if (balance > 1 && balanceOfSubtrees(node->left) > 0)
+						rotateRight(root, node);
+					else if (balance > 1 && balanceOfSubtrees(node->left) <= 0)
+					{
+						rotateLeft(root, node->left);
+						rotateRight(root, node);
+					}
+					node = node->parent;
+				}
+			}
 	};
 
 }
