@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/21 19:14:46 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:07:08 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ namespace ft
 
 		public:
 			// Default.
-			explicit map(const Compare& comp,
+			explicit map(const Compare& comp = Compare(),
 			const Allocator& alloc = Allocator()) : m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
 				m_lastElem = createNode(std::pair<const Key, T>());
@@ -95,9 +95,9 @@ namespace ft
 			}
 
 			// Range.
-			template<typename InputIt>map(InputIt first, InputIt last,
+			template<typename InputIterator>map(InputIterator first, InputIterator last,
 			const Compare& comp = Compare(), const Allocator& alloc = Allocator(),
-			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0) :
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) :
 			m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
 				m_lastElem = createNode(std::pair<const Key, T>());
@@ -207,7 +207,7 @@ namespace ft
 			// Insert one element starting from a certain position.
 			iterator insert (iterator position, const value_type& val)
 			{
-				if (position->first > val.firs)
+				if (position->first > val.first)
 				{
 					iterator prev(position);
 					--prev;
@@ -234,9 +234,9 @@ namespace ft
 			}
 
 			// Inserts all elements.
-			template <typename InputIt>
-			void insert (InputIt first, InputIt last,
-			typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0)
+			template <typename InputIterator>
+			void insert (InputIterator first, InputIterator last,
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 			{
 				while (first != last)
 					insert(*first++);
