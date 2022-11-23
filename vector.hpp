@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:29:09 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/06 18:56:19 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:55:08 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ namespace ft
 // __ Constructors & Destructor	
 
 		public:
-			//Default.
+			// Default.
 			vector(const allocator_type& alloc = allocator_type())
 			{
 				m_alloc = alloc;
@@ -58,7 +58,7 @@ namespace ft
 				m_capacity = 0;
 				m_data = m_alloc.allocate(0);
 			}
-			//Fill.
+			// Fill.
 			vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = Alloc())
 			{
 				m_alloc = alloc;
@@ -69,7 +69,7 @@ namespace ft
 				while ( i < n )
 					this->m_alloc.construct(m_data + i++, val);
 			}
-			//Copy.
+			// Copy.
 			vector (const vector &copy)
 			{
 				m_capacity = copy.m_capacity;
@@ -83,7 +83,7 @@ namespace ft
 					i++;
 				}
 			}
-			//Range
+			// Range.
 			template <typename InputIterator>
 			vector(InputIterator first, InputIterator last,
 			const allocator_type alloc = allocator_type(),
@@ -102,7 +102,7 @@ namespace ft
 					i++;
 				}
 			}
-			//Destroy
+			// Destroy.
 			~vector()
 			{
 				while (m_size > 0)
@@ -112,7 +112,7 @@ namespace ft
 
 // __ Membor Functions
 
-			//Operator=
+			// Operator=.
 			vector& operator=(const vector& other)
 			{
 				if (this == &other)
@@ -132,10 +132,10 @@ namespace ft
 				return *this;
 			}
 
-			//Get Allocator
+			// Get Allocator.
 			allocator_type get_allocator() const { return m_alloc; }
 
-			//Assign fill
+			// Assign fill.
 			void assign(value_type count, const value_type& val)
 			{
 				while (m_size > 0)
@@ -155,7 +155,7 @@ namespace ft
 				m_size = count;
 			}
 
-			//Assign range
+			// Assign range.
 			template <typename InputIt>
 			void assign(InputIt first, InputIt last,
 			typename enable_if<!is_integral<InputIt>::value>::type* = 0)
@@ -181,19 +181,19 @@ namespace ft
 
 // __ Capasity
 
-			//Empty
+			// Empty.
 			bool empty(void) const { return (this->m_size == 0); }
 
-			//Size
+			// Size.
 			size_type size() const { return this->m_size; }
 
-			//Capacity
+			// Capacity.
 			size_type capacity() const { return this->m_capacity; }
 
-			//Max size
+			// Max size.
 			size_type max_size() const { return this->m_alloc.max_size(); }
 
-			//Reserver
+			// Reserver.
 			void reserve(size_type new_cap)
 			{
 				if (new_cap > max_size())
@@ -221,7 +221,7 @@ namespace ft
 
 // __ Modifiers
 
-			//Insert singl element
+			// Insert singl element.
 			iterator insert(iterator pos, const T &value)
 			{
 				size_type	start;
@@ -231,7 +231,7 @@ namespace ft
 				return (this->begin() + start);
 			}
 	
-			//Insert fill
+			// Insert fill.
 			void insert(iterator pos, value_type count, const T& value)
 			{
 				pointer		tmp;
@@ -295,7 +295,7 @@ namespace ft
 				this->m_size = this->m_size + count;
 			}
 
-			//Insert range	
+			// Insert range.
 			template <typename InputIt>
 			void insert(iterator pos, InputIt first, InputIt last,
 			typename enable_if<!is_integral<InputIt>::value, InputIt>::type* = NULL)
@@ -363,7 +363,7 @@ namespace ft
 				this->m_size = this->m_size + count;
 			}
 
-			//Erase single element
+			// Erase single element.
 			iterator erase(iterator pos)
 			{
 				value_type index = pos - begin();
@@ -378,7 +378,7 @@ namespace ft
 				return iterator(m_data + index);
 			}
 
-			//Erase range
+			// Erase range.
 			iterator erase(iterator first, iterator last)
 			{
 				value_type index = first - begin();
@@ -399,7 +399,7 @@ namespace ft
 				return iterator(m_data + index);
 			}
 
-			//Push Back
+			// Push Back.
 			void push_back(const value_type val)
 			{
 				if (m_size == m_capacity)
@@ -414,21 +414,21 @@ namespace ft
 				m_size++;
 			}
 
-			//Pop Back
+			// Pop Back.
 			void pop_back()
 			{
 				m_size--;
 				m_alloc.destroy(m_data + m_size);
 			}
 
-			//Clear
+			// Clear.
 			void clear()
 			{
 				while (m_size > 0)
 					pop_back();
 			}
 
-			//Resize
+			// Resize.
 			void resize (value_type count, value_type val = value_type())
 			{
 				if (m_size > count)
@@ -462,7 +462,7 @@ namespace ft
 				}
 			}
 
-			//Swap
+			// Swap.
 			void swap(vector &x)
 			{
 				std::swap(this->m_data, x.m_data);
@@ -473,13 +473,15 @@ namespace ft
 
 // __ Element Access
 
-			//At
+			// At.
 			reference at(size_type pos)
 			{
 				if (pos >= m_size)
 					throw std::out_of_range("Out of range");
 				return m_data[pos];
 			}
+
+			// At (const).
 			const_reference at (size_type pos) const
 			{
 				if (pos >= m_size)
@@ -487,19 +489,19 @@ namespace ft
 				return m_data[pos];
 			}
 
-			//Operator[]
+			// Operator[].
 			reference operator[](size_type pos) { return m_data[pos]; }
 			const_reference operator[] (size_type pos) const { return m_data[pos]; }
 
-			//Front
+			// Front.
 			reference front() { return m_data[0]; }
 			const_reference front() const { return m_data[0]; }
 
-			//Back
+			// Back.
 			reference back() { return m_data[m_size - 1]; }
 			const_reference back() const { return m_data[m_size - 1]; }
 
-			//Data
+			// Data.
 			T* data() { return m_data; }
 			const T* data() const { return m_data; }
 

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/22 16:08:39 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/23 20:25:19 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,15 @@ namespace ft
 	template<
 		typename Key,
 		typename T,
-		typename Compare = std::less<Key>,
-			typename Allocator = std::allocator<std::pair<const Key, T> > >
+		typename Compare = ft::less<Key>,
+		typename Allocator = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
 		private:
 			// Attributes.
 			struct Node
 			{
-				std::pair<const Key, T>		content;
+				ft::pair<const Key, T>		content;
 				Node*						parent;
 				Node*						left;
 				Node*						right;
@@ -41,7 +41,7 @@ namespace ft
 			// Member Type.
 			typedef Key									key_type;
 			typedef T									mapped_type;
-			typedef std::pair<const Key, T>				value_type;
+			typedef ft::pair<const Key, T>				value_type;
 			typedef std::size_t							size_type;
 			typedef std::ptrdiff_t						difference_type;
 			typedef Compare								key_compare;
@@ -88,7 +88,7 @@ namespace ft
 			explicit map(const Compare& comp = Compare(),
 			const Allocator& alloc = Allocator()) : m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
-				m_lastElem = createNode(std::pair<const Key, T>());
+				m_lastElem = createNode(ft::pair<const Key, T>());
 				m_root = m_lastElem;
 				m_lastElem->left = m_lastElem;
 				m_lastElem->right = m_lastElem;
@@ -100,7 +100,7 @@ namespace ft
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0) :
 			m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
-				m_lastElem = createNode(std::pair<const Key, T>());
+				m_lastElem = createNode(ft::pair<const Key, T>());
 				m_root = m_lastElem;
 				m_lastElem->left = m_lastElem;
 				m_lastElem->right = m_lastElem;
@@ -112,7 +112,7 @@ namespace ft
 			map(const map& other) : 
 			m_size(0), m_allocPair(other.m_allocPair), m_comp(other.m_comp), m_allocNode(other.m_allocNode)
 			{
-				m_lastElem = createNode(std::pair<const Key, T>());
+				m_lastElem = createNode(ft::pair<const Key, T>());
 				m_root = m_lastElem;
 				m_lastElem->left = m_lastElem;
 				m_lastElem->right = m_lastElem;
@@ -134,6 +134,10 @@ namespace ft
 				clear();
 				deallocateNode(m_lastElem);
 			}
+
+// __ Getters
+
+			allocator_type get_allocator() const { return m_allocPair; }
 
 // __ Iterators
 
@@ -188,7 +192,7 @@ namespace ft
 				Node* tmp = searchNode(m_root, k);
 				if (tmp)
 					return tmp->content.second;
-				value_type val = make_pair<Key, T>(k, T());
+				value_type val = ft::make_pair<Key, T>(k, T());
 				return insertNode(m_root, val)->content.second;
 			}
 
@@ -250,7 +254,7 @@ namespace ft
 			}
 
 			// Removes one element on a specific key.
-			size_type ertase (const Key& k)
+			size_type erase (const Key& k)
 			{
 				size_type ret = deleteNode(m_root, k);
 				m_size -= ret;
@@ -350,7 +354,7 @@ namespace ft
 			// Return for the element whose key is considered to go after k (const).
 			const_iterator upper_bound(const Key& k) const
 			{
-				iterator it = begin();
+				const_iterator it = begin();
 				for (; it != end(); ++it)
 					if (!m_comp(k, it->first))
 						break;
@@ -370,7 +374,7 @@ namespace ft
 				iterator next(it);
 				if (it != end())
 					++next;
-				return make_pair<iterator, iterator>(it, next);
+				return ft::make_pair<iterator, iterator>(it, next);
 			}
 
 			// Returns the bounds of a range.
@@ -386,12 +390,21 @@ namespace ft
 				const_iterator next(it);
 				if (it != end())
 					++next;
-				return make_pair<const_iterator, const_iterator>(it, next);
+				return ft::make_pair<const_iterator, const_iterator>(it, next);
+			}
+
+		private:
+
+			// Swap.
+			template <typename U>
+			void swap(U& a, U& b)
+			{
+				U tmp = a;
+				a = b;
+				b = tmp;
 			}
 
 // __ AVL Binary Search Tree
-
-		private:
 
 			// Creates a new node and assign pair.
 			Node* createNode(const value_type& pair)
@@ -472,7 +485,7 @@ namespace ft
 				else if (insertPos->content.first < pair.first && insertPos->right && insertPos->right != m_lastElem)
 					return insertNode(insertPos->right, pair);
 				Node *newNode = createNode(pair);
-				if (insertPos->constent.first > newNode->content.first && !insertPos->left)
+				if (insertPos->content.first > newNode->content.first && !insertPos->left)
 					insertPos->left = newNode;
 				else if (insertPos->content.first < newNode->content.first && !insertPos->right)
 					insertPos->right = newNode;
@@ -527,7 +540,7 @@ namespace ft
 					}
 					else
 					{
-						Node* maxNode = searchMaxNode(del->Left);
+						Node* maxNode = searchMaxNode(del->left);
 						m_allocPair.destroy(&del->content);
 						m_allocPair.construct(&del->content, maxNode->content);
 						return deleteNode(del->left, maxNode->content.first);
@@ -560,7 +573,7 @@ namespace ft
 				}
 				else if ((!del->left || del->left == m_lastElem) && del->right && del->right != m_lastElem)
 				{
-					balanceNode = del->paernt;
+					balanceNode = del->parent;
 					del->content.first <= del->parent->content.first ? del->parent->left = del->right :
 						del->parent->right = del->right;
 					del->right->parent = del->parent;
@@ -657,4 +670,43 @@ namespace ft
 			}
 	};
 
+	// Non member functions
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	void swap(ft::map<Key, T, Compare, Alloc> &lhs,
+	ft::map<Key, T, Compare, Alloc> &rhs)
+	{ lhs.swap(rhs); }
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator==(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return (false);
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	}
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator!=(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{ return (!(lhs == rhs)); }
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator<(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{ return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator<=(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{ return (!(rhs < lhs)); }
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator>(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{ return (rhs < lhs); }
+
+	template <typename Key, typename T, typename Compare, typename Alloc>
+	bool operator>=(const ft::map<Key, T, Compare, Alloc> &lhs,
+	const ft::map<Key, T, Compare, Alloc> &rhs)
+	{ return (!(lhs < rhs)); }
 }

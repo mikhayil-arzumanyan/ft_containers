@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   map_test.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/19 14:55:54 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/19 15:12:09 by miarzuma         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
@@ -20,6 +8,9 @@
 #include <list>
 #include <functional>
 #include "map.hpp"
+
+#ifndef	MYCOLORS_HPP
+# define MYCOLORS_HPP
 
 # define COLOR_YELLOW_B "\033[1;33m"
 # define COLOR_PURPLE_B "\033[1;35m"

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:31:05 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/05 20:46:51 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:57:51 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 namespace ft
 {
-	//Integral Constant
+	// Integral Constant.
 	template <typename T, T v>
 	struct integral_constant
 	{
@@ -28,7 +28,7 @@ namespace ft
 	typedef ft::integral_constant<bool, true>	true_type;
 	typedef ft::integral_constant<bool, false>	false_type;
 
-	//Is Integral
+	// Is Integral.
 	template <typename T> struct	is_integral : ft::integral_constant<bool, false> {};
 
 	template <> struct is_integral<bool> : ft::integral_constant<bool, true> {};
@@ -46,7 +46,7 @@ namespace ft
 	template <> struct is_integral<wchar_t> : ft::integral_constant<wchar_t, true> {};
 	template <> struct is_integral<char16_t> : ft::integral_constant<char16_t, true> {};
 
-	//Equal
+	// Equal.
 	template <typename InputIterator1, typename InputIterator2>
 	bool equal (InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2)
 	{
@@ -60,7 +60,7 @@ namespace ft
 		return (true);
 	}
 
-	//Lexicographical Compare
+	// Lexicographical Compare.
 	template <typename InputIterator1, typename InputIterator2>
 	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 	InputIterator2 first2, InputIterator2 last2)
@@ -77,15 +77,15 @@ namespace ft
 		return (first2 != last2);
 	}
 
-	//Enable If
+	// Enable If.
 	template <bool U, class T = void> struct enable_if {};
 	template <class T> struct enable_if<true, T> { typedef T	type; };
 
-	//Is Same
+	// Is Same.
 	template <typename T, typename U> struct is_same : false_type {};
 	template <typename T> struct is_same<T, T> : ft::true_type {};
 
-	//Iterator Traits
+	// Iterator Traits.
 	template <class Iter> struct iterator_traits
 	{
 		typedef typename Iter::difference_type difference_type;
@@ -111,7 +111,7 @@ namespace ft
 		typedef std::random_access_iterator_tag iterator_category;
 	};
 
-	//Random Access Iterator
+	// Random Access Iterator.
 	template <class T> class random_access_iterator
 	{
 		public:
@@ -174,7 +174,7 @@ namespace ft
 			referance operator[](difference_type n) const { return ptr[n]; }
 	};
 
-	//Non Member Functions random_access_iterator
+	// Non Member Functions random access iterator.
 	template <typename It1, typename It2>
 	bool operator==(random_access_iterator<It1> const &lhs, 
 	random_access_iterator<It2> const &rhs)
@@ -227,7 +227,7 @@ namespace ft
     operator-(const random_access_iterator<T> &lhs, const random_access_iterator<T> &rhs)
     { return (lhs.base() - rhs.base()); }
 
-	//Reverse Iterator
+	// Reverse Iterator.
 	template <class Iter> class reverse_iterator
 	{
 		public:
@@ -300,7 +300,7 @@ namespace ft
 			}
 	};
 
-	//Non Member Functions reverse_iterator
+	// Non Member Functions reverse iterator.
 	template <typename It1, typename It2>
 	bool operator==(const reverse_iterator<It1> &lhs,
 	const reverse_iterator<It2> &rhs)
@@ -348,7 +348,7 @@ namespace ft
 	const reverse_iterator<Iterator1> &rhs)
 	{ return rhs.base() - lhs.base(); }
 
-	//Distance
+	// Distance.
 	template <typename InputIt>
 	typename ft::iterator_traits<InputIt>::difference_type
 	distance(InputIt first, InputIt last)

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:29:52 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/05 20:50:26 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/22 16:59:12 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ namespace ft
 	class stack
 	{
 		public:
-			//Member types
+			// Member types.
 			typedef Container							container_type;
 			typedef typename Container::value_type		value_type;
 			typedef typename Container::size_type		size_type;
@@ -29,11 +29,11 @@ namespace ft
 			typedef typename Container::const_reference	const_reference;
 
 		protected:
-			//Member objects
-			container_type						c;
+			// Member objects.
+			container_type	c;
 
 		public:
-			//constructers and Destructer
+			// Constructers and Destructer.
 			explicit stack(const Container& cont = Container()) { this->c = cont; }
 			stack(const stack& other) { this->c = other.c; }
 			~stack() { this->c.clear(); }
@@ -44,7 +44,7 @@ namespace ft
 				return (*this);
 			}
 
-			//Member functions
+			// Member functions.
 			reference top() { return this->c.back(); }
 			const_reference top() const { return this->c.back(); }
 			bool empty() const { return this->c.empty(); }
@@ -53,7 +53,7 @@ namespace ft
 			void pop() { return this->c.pop_back(); }
 
 
-			//Non-member function
+			// Non-member function.
 			template <typename U, typename Cont>
 			friend bool operator==(const stack<U, Cont>& lhs, const stack<U, Cont>& rhs)
 			{ return (lhs.c == rhs.c); }

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/21 20:25:35 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/23 20:25:21 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,62 @@
 
 namespace ft
 {
+	// Pair.
+	template <typename T1, typename T2>
+	class pair
+	{
+		public:
+			pair() : first(), second() {};
+			pair(const T1& a, const T2& b) : first(a), second(b) {};
+			pair(const pair<T1, T2>& copy) : first(copy.first), second(copy.second) {};
+			template <typename U, typename V>
+			pair(const pair<U, V>& copy) : first(copy.first), second(copy.second) {};
+			~pair() {};
+			pair& operator=(const pair& assign)
+			{
+				if (this != &assign)
+				{
+					first = assign.first;
+					second = assign.second;
+				}
+				return (*this);
+			}
+
+		T1 first;
+		T2 second;
+	};
+
+	// Pair operators.
+	template <typename T1, typename T2>
+	bool operator==(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{ return (lhs.first == rhs.first && lhs.second == rhs.second); }
+
+	template <typename T1, typename T2>
+	bool operator!=(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{ return (!(lhs == rhs)); }
+
+	template <typename T1, typename T2>
+	bool operator<(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{
+		if (lhs.first < rhs.first)
+			return (true);
+		else if (lhs.first == rhs.first)
+			return (lhs.second < rhs.second);
+		return (false);
+	}
+
+	template <typename T1, typename T2>
+	bool operator<=(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{ return (!(rhs < lhs)); }
+	
+	template <typename T1, typename T2>
+	bool operator>(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{ return (rhs < lhs); }
+
+	template <typename T1, typename T2>
+	bool operator>=(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
+	{ return (!(lhs < rhs)); }
+
 	// Is integral.
 	template <typename T>
 	struct is_integral { static const bool value = false; };
@@ -86,7 +142,7 @@ namespace ft
 			typedef Key																	key_type;	
 			typedef Compare																key_compare;
 			typedef T																	mapped_type;
-			typedef std::pair<const key_type, mapped_type>								value_type;
+			typedef ft::pair<const Key, T>												value_type;
 			typedef long int															difference_type;
 			typedef size_t																size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
@@ -119,7 +175,7 @@ namespace ft
 			// Operator=.
 			map_iterator& operator=(const map_iterator& assign)
 			{
-				if (this != assign.m_node)
+				if (this != &assign)
 				{
 					m_node = assign.m_node;
 					m_lastElem = assign.m_lastElem;
@@ -259,7 +315,7 @@ namespace ft
 			typedef Key													key_type;
 			typedef Compare												key_compare;
 			typedef T													mapped_type;
-			typedef std::pair<const key_type, mapped_type>				value_type;
+			typedef ft::pair<const Key, T>								value_type;
 			typedef long int											difference_type;
 			typedef size_t												size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
@@ -270,7 +326,8 @@ namespace ft
 			nodePtr			m_node;
 			nodePtr			m_lastElem;
 			key_compare		m_comp;
-
+	
+		public:
 // __ Constructors & Destructor
 
 			// Default.
@@ -416,7 +473,7 @@ namespace ft
 				return (res);
 			}
 
-			bool operator==(const rev_map_iterator& it) const { return (it.m_node = m_node); }
+			bool operator==(const rev_map_iterator& it) const { return (it.m_node == m_node); }
 			bool operator!=(const rev_map_iterator& it) const { return (it.m_node != m_node); }
 
 		private:
@@ -437,74 +494,51 @@ namespace ft
 
 	};
 
-	// Pair.
-	template <typename T1, typename T2>
-	class pair
+	// Less.
+	template <typename T>
+	struct less
 	{
-		public:
-			pair() : first(), second() {};
-			pair(const T1& a, const T2& b) : first(a), second(b) {};
-			pair(const pair<T1, T2>& copy) : first(copy.first), second(copy.second) {};
-			template <typename U, typename V>
-			pair(const pair<U, V>& copy) : first(copy.first), second(copy.second) {};
-			~pair() {};
-			pair& operator=(const pair& assign)
-			{
-				if (this != &assign)
-				{
-					first = assign.first;
-					second = assign.second;
-				}
-				return (*this);
-			}
-
-		T1 first;
-		T2 second;
+		typedef T			first_argument_type;
+		typedef T			second_argument_type;
+		typedef bool		result_type;
+		bool operator() (const T& a, const T& b) const
+		{ return (a < b); }
 	};
-
-	// Pair operators.
-	template <typename T1, typename T2>
-	bool operator==(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{ return (lhs.first == rhs.first && lhs.second == rhs.second); }
-
-	template <typename T1, typename T2>
-	bool operator!=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{ return (!(lhs == rhs)); }
-
-	template <typename T1, typename T2>
-	bool operator<(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{
-		if (lhs.first < rhs.first)
-			return (true);
-		else if (lhs.first == rhs.first)
-			return (lhs.second < rhs.second);
-		return (false);
-	}
-
-	template <typename T1, typename T2>
-	bool operator<=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{ return (!(rhs < lhs)); }
-	
-	template <typename T1, typename T2>
-	bool operator>(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{ return (rhs < lhs); }
-
-	template <typename T1, typename T2>
-	bool operator>=(const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs)
-	{ return (!(lhs < rhs)); }
 
 	// Make pair.
 	template <typename T1, typename T2>
-	pair<T1, T2> make_pair(T1 a, T2 b)
-	{ return pair<T1, T2>(a, b); }
+	ft::pair<T1, T2> make_pair(T1 a, T2 b)
+	{ return ft::pair<T1, T2>(a, b); }
 
-	// Swap.
-	template <typename U>
-	void swap(U& a, U& b)
+	// Lexicographical Compare.
+	template <typename InputIterator1, typename InputIterator2>
+	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
+	InputIterator2 first2, InputIterator2 last2)
 	{
-		U tmp = a;
-		a = b;
-		b = tmp;
+		while (first1 != last1)
+		{
+			if (first2 == last2 || *first2 < *first1)
+				return false;
+			else if (*first1 < *first2)
+				return true;
+			++first1;
+			++first2;
+		}
+		return (first2 != last2);
+	}
+
+	// Equal.
+	template <typename InputIterator1, typename InputIterator2>
+	bool equal (InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2)
+	{
+		while (begin1 != end1)
+		{
+			if (!(*begin1 == *begin2))
+					return (false);
+			++begin1;
+			++begin2;
+		}
+		return (true);
 	}
 }
 
