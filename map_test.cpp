@@ -152,23 +152,23 @@ static void	example2()
 	ft_A.insert(ft_pair1);
 	std::cout << ", size: " << ft_A.size();
 	ft_A.insert(ft::make_pair(-1, "B"));
-	std::cout << ", size: " << ft_A.size();
-	ft_A.insert(ft::make_pair(1, "C"));
-	std::cout << ", pair -> first: " << ft_pair1.first;
-	std::cout << ", second: " << ft_pair1.second;
-	std::cout << ", size: " << ft_A.size();
-	std::cout << ", size: " << ft_A.max_size();
-	std::cout << ", empty: " << ft_A.empty();
-	ft_it1 = ft_A.begin();
-	std::cout << ", it: " << (*ft_it1).first;
-	std::cout << ", " << ft_it1->first;
-	std::cout << ", " << ft_it1->second;
-	std::cout << ", " << (ft_it1++)->first;
-	std::cout << ", " << (++ft_it1)->first;
-	std::cout << ", " << (--ft_it1)->second;
-	std::cout << ", " << (ft_it1--)->second;
-	std::cout << ", " << ft_it1->second;
-	std::cout << '.' << COLOR_END << std::endl << std::endl;
+	//std::cout << ", size: " << ft_A.size();
+	//ft_A.insert(ft::make_pair(1, "C"));
+	//std::cout << ", pair -> first: " << ft_pair1.first;
+	//std::cout << ", second: " << ft_pair1.second;
+	//std::cout << ", size: " << ft_A.size();
+	//std::cout << ", size: " << ft_A.max_size();
+	//std::cout << ", empty: " << ft_A.empty();
+//	ft_it1 = ft_A.begin();
+//	std::cout << ", it: " << (*ft_it1).first;
+//	std::cout << ", " << ft_it1->first;
+//	std::cout << ", " << ft_it1->second;
+//	std::cout << ", " << (ft_it1++)->first;
+//	std::cout << ", " << (++ft_it1)->first;
+//	std::cout << ", " << (--ft_it1)->second;
+//	std::cout << ", " << (ft_it1--)->second;
+//	std::cout << ", " << ft_it1->second;
+//	std::cout << '.' << COLOR_END << std::endl << std::endl;
 }
 
 static void	example3()
@@ -1527,11 +1527,11 @@ static void	example21()
 	std::cout << '.' << COLOR_END << std::endl << std::endl;
 }
 
-static void	example22()
-{
+//static void	example22()
+//{
 	/* Example 22 */
 	/* Example from bounds */
-
+/*
 	std::cout << COLOR_PURPLE_B << "Example 22" << COLOR_END << std::endl;
 	std::cout << COLOR_YELLOW_B;
 	std::cout << "std::map -> ";
@@ -1570,32 +1570,32 @@ static void	example22()
 	for (std::vector<int>::iterator ft_it1 = ft_v.begin(); ft_it1 != ft_v.end(); ++ft_it1)
 		std::cout << " " << *ft_it1;
 	std::cout << '.' << COLOR_END << std::endl;
-}
+}*/
 
 void	map_test()
 {
 	example1();
 	example2();
-	example3();
-	example4();
-	example5();
-	example6();
-	example7();
-	example8();
-	example9();
-	example10();
-	example11();
-	example12();
-	example13();
-	example14();
-	example15();
-	example16();
-	example17();
-	example18();
-	example19();
-	example20();
-	example21();
-	example22();
+//	example3();
+//	example4();
+//	example5();
+//	example6();
+//	example7();
+//	example8();
+//	example9();
+//	example10();
+//	example11();
+//	example12();
+//	example13();
+//	example14();
+//	example15();
+//	example16();
+//	example17();
+//	example18();
+//	example19();
+//	example20();
+//	example21();
+//	example22();
 }
 
 #endif

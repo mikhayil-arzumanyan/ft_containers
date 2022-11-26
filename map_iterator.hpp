@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/23 20:25:21 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/26 17:22:38 by tumolabs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,10 +282,12 @@ namespace ft
 						m_node = m_node->left;
 						Node* tmp = 0;
 						if (m_node != m_lastElem && (tmp = searchMaxNode(m_node)))
-							m_node = m_node->parent;
+							m_node = tmp;
 					}
-					return (res);
+					else
+						m_node = m_node->parent;
 				}
+				return (res);
 			}
 
 			bool operator==(const map_iterator& it) const { return (it.m_node == m_node); }

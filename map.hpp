@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/23 20:25:19 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/26 18:31:01 by tumolabs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,24 @@ namespace ft
 			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, true>	const_reverse_iterator;
 		public:
 			// Member classes.
-			class value_compare : std::binary_function<value_type, value_type, bool>
+			class value_compare
+			{
+				friend class map;
+				protected:
+					Compare comp;
+					value_compare(Compare c) : comp(c) {}
+				public:
+					typedef bool		result_type;
+					typedef value_type	first_argument_type;
+					typedef value_type	second_argument_type;
+					bool operator() (const value_type a, const value_type b) const
+					{
+						return comp(a.first, b.first);
+					}
+			};
+
+/*			
+ 			class value_compare : std::binary_function<value_type, value_type, bool>
 			{
 				protected:
 					Compare comp;
@@ -72,6 +89,8 @@ namespace ft
 				private:
 					friend class map<key_type, value_type, key_compare, allocator_type>;
 			};
+*/
+
 		private:
 			// Attributes.
 			Node*					m_root;
@@ -176,7 +195,7 @@ namespace ft
 				return (it->second);
 			}
 
-			// AT (const)
+			// At (const)
 			const T& at(const Key& key) const
 			{
 				iterator it;
@@ -346,7 +365,7 @@ namespace ft
 			{
 				iterator it = begin();
 				for (; it != end(); ++it)
-					if (!m_comp(k, it->first))
+					if (m_comp(k, it->first))
 						break;
 				return it;
 			}
@@ -356,7 +375,7 @@ namespace ft
 			{
 				const_iterator it = begin();
 				for (; it != end(); ++it)
-					if (!m_comp(k, it->first))
+					if (m_comp(k, it->first))
 						break;
 				return it;
 			}
