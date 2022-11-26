@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/26 18:31:01 by tumolabs         ###   ########.fr       */
+/*   Updated: 2022/11/26 19:34:58 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -462,7 +462,7 @@ namespace ft
 					return root;
 				if (root->content.first > k && root->left && root->left != m_lastElem)
 					return searchNode(root->left, k);
-				else if (root->content.first > k && root->right && root->right != m_lastElem)
+				else if (root->content.first < k && root->right && root->right != m_lastElem)
 					return searchNode(root->right, k);
 				return 0;
 			}
