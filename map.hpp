@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/27 18:00:56 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/27 19:21:01 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,12 +433,10 @@ namespace ft
 		std::cout << __LINE__ << std::endl;
 				if (!root || root == m_lastElem)
 				{
-		std::cout << __LINE__ << "------------" << std::endl;
+		std::cout << __LINE__ << std::endl;
 					return height - 1;
 				}
 		std::cout << __LINE__ << std::endl;
-				if (root->left == 0)
-					std::cout << "vay qu ara" << std::endl;
 				int leftHeight = heightTree(root->left, height + 1);
 		std::cout << __LINE__ << std::endl;
 				int rightHeight = heightTree(root->right, height + 1);
