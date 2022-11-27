@@ -152,6 +152,8 @@ static void	example2()
 	ft_A.insert(ft_pair1);
 	std::cout << ", size: " << ft_A.size();
 	ft_A.insert(ft::make_pair(-1, "B"));
+
+
 	//std::cout << ", size: " << ft_A.size();
 	//ft_A.insert(ft::make_pair(1, "C"));
 	//std::cout << ", pair -> first: " << ft_pair1.first;

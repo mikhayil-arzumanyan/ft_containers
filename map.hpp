@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/26 19:34:58 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/27 18:00:56 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,19 @@ namespace ft
 		public:
 			// Member Type.
 			typedef Key									key_type;
-			typedef T									mapped_type;
-			typedef ft::pair<const Key, T>				value_type;
-			typedef std::size_t							size_type;
-			typedef std::ptrdiff_t						difference_type;
 			typedef Compare								key_compare;
 			typedef Allocator							allocator_type;
-			typedef value_type&							reference;
-			typedef const value_type&					const_reference;
-			typedef typename Allocator::pointer			pointer;
-			typedef typename Allocator::const_pointer	const_pointer;
+			typedef T									mapped_type;
+
+			typedef ft::pair<const Key, T>				value_type;
+			typedef long int							difference_type;
+			typedef size_t								size_type;
+
+			typedef T&									reference;
+			typedef const T&							const_reference;
+			typedef T*									pointer;
+			typedef const T*							const_pointer;
+
 			typedef typename ft::map_iterator<Key, T, Compare, Node, false>		iterator;
 			typedef typename ft::map_iterator<Key, T, Compare, Node, true>		const_iterator;
 			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, false>	reverse_iterator;
@@ -71,25 +74,6 @@ namespace ft
 						return comp(a.first, b.first);
 					}
 			};
-
-/*			
- 			class value_compare : std::binary_function<value_type, value_type, bool>
-			{
-				protected:
-					Compare comp;
-					value_compare(Compare c) : comp(c) {}
-				public:
-					bool operator() (const value_type& lhs, const value_type& rhs) const
-					{
-						return (this->comp(lhs.first, rhs.first));
-					}
-					typedef bool		result_type;
-					typedef value_type	first_argument_type;
-					typedef value_type	second_argument_type;
-				private:
-					friend class map<key_type, value_type, key_compare, allocator_type>;
-			};
-*/
 
 		private:
 			// Attributes.
@@ -224,7 +208,7 @@ namespace ft
 				if (elemIsPresent)
 					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem, m_comp), false);
 				++m_size;
-				return ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem, m_comp), true);
+				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem, m_comp), true));
 			}
 
 			// Insert one element starting from a certain position.
@@ -446,10 +430,19 @@ namespace ft
 			// Calculates the tree's height.
 			int heightTree(Node *root, int height)
 			{
+		std::cout << __LINE__ << std::endl;
 				if (!root || root == m_lastElem)
+				{
+		std::cout << __LINE__ << "------------" << std::endl;
 					return height - 1;
+				}
+		std::cout << __LINE__ << std::endl;
+				if (root->left == 0)
+					std::cout << "vay qu ara" << std::endl;
 				int leftHeight = heightTree(root->left, height + 1);
+		std::cout << __LINE__ << std::endl;
 				int rightHeight = heightTree(root->right, height + 1);
+		std::cout << __LINE__ << std::endl;
 				return leftHeight > rightHeight ? leftHeight : rightHeight;
 			}
 
@@ -617,9 +610,15 @@ namespace ft
 			// Compares the heights of left and right subtrees.
 			int balanceOfSubtrees(Node* node)
 			{
+	std::cout << __LINE__ << std::endl;
 				if (!node)
+				{
+	std::cout << __LINE__ << std::endl;
 					return 0;
+				}
+	std::cout << __LINE__ << std::endl;
 				return heightTree(node->left, 1) - heightTree(node->right, 1);
+	std::cout << __LINE__ << std::endl;
 			}
 
 			// RIGHT ROTATION
@@ -669,23 +668,39 @@ namespace ft
 			{
 				while (node)
 				{
-					int balance;
-					if ((balance = balanceOfSubtrees(node)) < -1 && balanceOfSubtrees(node->right) < 0)
+				std::cout << __LINE__ << std::endl;
+					int balance = balanceOfSubtrees(node);
+				std::cout << __LINE__ << std::endl;
+					if (balance < -1 && balanceOfSubtrees(node->right) < 0)
+					{
+				std::cout << __LINE__ << std::endl;
 						rotateLeft(root, node);
+				std::cout << __LINE__ << std::endl;
+					}
 					else if (balance < -1 && balanceOfSubtrees(node->right) >= 0)
 					{
+				std::cout << __LINE__ << std::endl;
 						rotateRight(root, node->right);
 						rotateLeft(root, node);
+				std::cout << __LINE__ << std::endl;
 					}
 					else if (balance > 1 && balanceOfSubtrees(node->left) > 0)
+					{
+				std::cout << __LINE__ << std::endl;
 						rotateRight(root, node);
+				std::cout << __LINE__ << std::endl;
+					}
 					else if (balance > 1 && balanceOfSubtrees(node->left) <= 0)
 					{
+				std::cout << __LINE__ << std::endl;
 						rotateLeft(root, node->left);
 						rotateRight(root, node);
+				std::cout << __LINE__ << std::endl;
 					}
 					node = node->parent;
+				std::cout << __LINE__ << std::endl;
 				}
+				std::cout << __LINE__ << std::endl;
 			}
 	};
 
