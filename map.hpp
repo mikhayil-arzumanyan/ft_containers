@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/27 19:21:01 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/28 22:42:14 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,85 @@
 
 namespace ft
 {
-    		//   key     		Type of keys.
-    		//   T       	 	Type of elements.
-		   	//   Compare  		Comparison object used to sort the binary tree.
-			//   Allocator		Object used to manage the vector' storage.
+	//   key     		Type of keys.
+	//   T       	 	Type of elements.
+	//   Compare  		Comparison object used to sort the binary tree.
+	//   Allocator		Object used to manage the vector' storage.
+	template<typename T>
+	struct Node
+	{
+		T							content;
+		Node*						parent;
+		Node*						left;
+		Node*						right;
+
+		// Searches for the element with the highest key in the tree.
+		static Node* searchMaxNode(Node *root, Node* m_lastElem)
+		{
+			if (root->right && root->right != m_lastElem)
+				return searchMaxNode(root->right, m_lastElem);
+			return root;
+		}
+
+		// Searches for the element with the lowest key in the tree.
+		static Node* searchMinNode(Node *root, Node* m_lastElem)
+		{
+			if (root->left && root->left != m_lastElem)
+				return searchMinNode(root->left, m_lastElem);
+			return root;
+		}
+
+		// Operator++
+		static Node* increment(Node* m_node, Node* m_lastElem)
+		{
+			Node* node = m_node;
+			if (node == m_lastElem)
+			{
+				node = node->parent;
+				node = Node::searchMinNode(node, m_lastElem);
+			}
+			else if (node->right && node->right != m_lastElem)
+				node = Node::searchMinNode(node->right, m_lastElem);
+			else
+			{
+				node = node->parent;
+				while(node != m_lastElem && node == m_node->right)
+				{
+					node = m_node;
+					m_node = m_node->parent;
+				}
+				if (node->parent != m_lastElem)
+					node = m_node;
+			}
+			return node;
+
+		}
+
+		// Operator--
+		static Node* decrement(Node* m_node, Node* m_lastElem)
+		{
+			Node* node = m_node;
+			if (node == m_lastElem)
+			{
+				node = node->parent;
+				node = Node::searchMaxNode(node, m_lastElem);
+			}
+			else if (node->left && node->left != m_lastElem)
+				node = Node::searchMaxNode(node->left, m_lastElem);
+			else
+			{
+				node = node->parent;
+				while(node != m_lastElem && node == m_node->left)
+				{
+					node = m_node;
+					m_node = m_node->parent;
+				}
+				if (node->parent != m_lastElem)
+					node = m_node;
+			}
+			return node;
+		}
+	};
 	template<
 		typename Key,
 		typename T,
@@ -28,15 +103,8 @@ namespace ft
 		typename Allocator = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
-		private:
-			// Attributes.
-			struct Node
-			{
-				ft::pair<const Key, T>		content;
-				Node*						parent;
-				Node*						left;
-				Node*						right;
-			};
+			typedef ft::Node<ft::pair<const Key, T> >	Node;
+
 		public:
 			// Member Type.
 			typedef Key									key_type;
@@ -53,10 +121,10 @@ namespace ft
 			typedef T*									pointer;
 			typedef const T*							const_pointer;
 
-			typedef typename ft::map_iterator<Key, T, Compare, Node, false>		iterator;
-			typedef typename ft::map_iterator<Key, T, Compare, Node, true>		const_iterator;
-			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, false>	reverse_iterator;
-			typedef typename ft::rev_map_iterator<Key, T, Compare, Node, true>	const_reverse_iterator;
+			typedef typename ft::map_iterator<value_type, false>		iterator;
+			typedef typename ft::map_iterator<value_type, true>		const_iterator;
+			typedef typename ft::rev_map_iterator<value_type, false>	reverse_iterator;
+			typedef typename ft::rev_map_iterator<value_type, true>	const_reverse_iterator;
 		public:
 			// Member classes.
 			class value_compare
@@ -92,9 +160,10 @@ namespace ft
 			const Allocator& alloc = Allocator()) : m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
 				m_lastElem = createNode(ft::pair<const Key, T>());
+				m_lastElem->left = 0;
+				m_lastElem->right = 0;
+				m_lastElem->parent = 0;
 				m_root = m_lastElem;
-				m_lastElem->left = m_lastElem;
-				m_lastElem->right = m_lastElem;
 			}
 
 			// Range.
@@ -144,14 +213,14 @@ namespace ft
 
 // __ Iterators
 
-			iterator begin()						{ return iterator(m_lastElem->right, m_lastElem, m_comp); }
-			const_iterator begin() const			{ return const_iterator(m_lastElem->right, m_lastElem, m_comp); }
-			iterator end()							{ return iterator(m_lastElem, m_lastElem, m_comp); }
-			const_iterator end() const				{ return const_iterator(m_lastElem, m_lastElem, m_comp); }
-			reverse_iterator rbegin()				{ return reverse_iterator(m_lastElem->left, m_lastElem, m_comp); }
-			const_reverse_iterator rbegin() const	{ return const_reverse_iterator(m_lastElem->left, m_lastElem, m_comp); } 
-			reverse_iterator rend()					{ return reverse_iterator(m_lastElem, m_lastElem, m_comp); }
-			const_reverse_iterator rend() const		{ return const_reverse_iterator(m_lastElem, m_lastElem, m_comp); }
+			iterator begin()						{ return iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
+			const_iterator begin() const			{ return const_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
+			iterator end()							{ return iterator(m_lastElem, m_lastElem); }
+			const_iterator end() const				{ return const_iterator(m_lastElem, m_lastElem); }
+			reverse_iterator rbegin()				{ return reverse_iterator(Node::searchMaxNode(m_root, m_lastElem), m_lastElem); }
+			const_reverse_iterator rbegin() const	{ return const_reverse_iterator(Node::searchMaxNode(m_root, m_lastElem), m_lastElem); } 
+			reverse_iterator rend()					{ return reverse_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
+			const_reverse_iterator rend() const		{ return const_reverse_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
 
 // __ Capacity
 
@@ -205,10 +274,10 @@ namespace ft
 			ft::pair<iterator, bool> insert (const value_type& val)
 			{
 				Node* elemIsPresent = searchNode(m_root, val.first);
-				if (elemIsPresent)
-					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem, m_comp), false);
+				if (elemIsPresent && elemIsPresent != m_lastElem)
+					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem), false);
 				++m_size;
-				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem, m_comp), true));
+				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem), true));
 			}
 
 			// Insert one element starting from a certain position.
@@ -237,7 +306,7 @@ namespace ft
 				if (position != end() && val.first == position->first)
 					return position;
 				++m_size;
-				return iterator(insertNode(position.getNode(), val), m_lastElem, m_comp);
+				return iterator(insertNode(position.getNode(), val), m_lastElem);
 			}
 
 			// Inserts all elements.
@@ -304,7 +373,7 @@ namespace ft
 			{
 				Node* tmp = searchNode(m_root, k);
 				if (tmp)
-					return iterator(tmp, m_lastElem, m_comp);
+					return iterator(tmp, m_lastElem);
 				return end();
 			}
 
@@ -313,7 +382,7 @@ namespace ft
 			{
 				Node* tmp = searchNode(m_root, k);
 				if (tmp)
-					return iterator(tmp, m_lastElem, m_comp);
+					return iterator(tmp, m_lastElem);
 				return end();
 			}
 
@@ -410,13 +479,17 @@ namespace ft
 // __ AVL Binary Search Tree
 
 			// Creates a new node and assign pair.
+			bool isSentinel(Node* node)
+			{
+				return node == 0 || node == m_lastElem;
+			}
 			Node* createNode(const value_type& pair)
 			{
 				Node* newNode = m_allocNode.allocate(1);
 				m_allocPair.construct(&newNode->content, pair);
-				newNode->parent = 0;
-				newNode->left = 0;
-				newNode->right = 0;
+				newNode->parent = m_lastElem;
+				newNode->left = m_lastElem;
+				newNode->right = m_lastElem;
 				return newNode;
 			}
 
@@ -430,17 +503,10 @@ namespace ft
 			// Calculates the tree's height.
 			int heightTree(Node *root, int height)
 			{
-		std::cout << __LINE__ << std::endl;
 				if (!root || root == m_lastElem)
-				{
-		std::cout << __LINE__ << std::endl;
 					return height - 1;
-				}
-		std::cout << __LINE__ << std::endl;
 				int leftHeight = heightTree(root->left, height + 1);
-		std::cout << __LINE__ << std::endl;
 				int rightHeight = heightTree(root->right, height + 1);
-		std::cout << __LINE__ << std::endl;
 				return leftHeight > rightHeight ? leftHeight : rightHeight;
 			}
 
@@ -458,21 +524,6 @@ namespace ft
 				return 0;
 			}
 
-			// Searches for the element with the highest key in the tree.
-			Node* searchMaxNode(Node *root) const
-			{
-				if (root->right && root->right != m_lastElem)
-					return searchMaxNode(root->right);
-				return root;
-			}
-
-			// Searches for the element with the lowest key in the tree.
-			Node* searchMinNode(Node *root) const
-			{
-				if (root->left && root->left != m_lastElem)
-					return searchMinNode(root->left);
-				return root;
-			}
 			
 			// Inserts a pair in the tree or a specific subtree by adding a new element, and 
             // then equilibrates the AVL tree if necessary. If element is already present, 
@@ -484,6 +535,7 @@ namespace ft
 					m_root = createNode(pair);
 					m_root->left = m_lastElem;
 					m_root->right = m_lastElem;
+					m_root->parent = m_lastElem;
 					m_lastElem->left = m_root;
 					m_lastElem->right = m_root;
 					return m_root;
@@ -495,17 +547,17 @@ namespace ft
 				else if (insertPos->content.first < pair.first && insertPos->right && insertPos->right != m_lastElem)
 					return insertNode(insertPos->right, pair);
 				Node *newNode = createNode(pair);
-				if (insertPos->content.first > newNode->content.first && !insertPos->left)
+				if (insertPos->content.first > newNode->content.first && (!insertPos->left || insertPos->left == m_lastElem))
 					insertPos->left = newNode;
-				else if (insertPos->content.first < newNode->content.first && !insertPos->right)
+				else if (insertPos->content.first < newNode->content.first && (!insertPos->right || insertPos->right == m_lastElem))
 					insertPos->right = newNode;
-				else if (insertPos->left && insertPos->content.first > newNode->content.first)
+				else if (insertPos->left && insertPos->left != m_lastElem && insertPos->content.first > newNode->content.first)
 				{
 					newNode->left = m_lastElem;
 					m_lastElem->right = newNode;
 					insertPos->left = newNode;
 				}
-				else if (insertPos->right && insertPos->content.first < newNode->content.first)
+				else if (insertPos->right && insertPos->right != m_lastElem && insertPos->content.first < newNode->content.first)
 				{
 					newNode->right = m_lastElem;
 					m_lastElem->left = newNode;
@@ -522,9 +574,9 @@ namespace ft
 			{
 				Node* balanceNode = 0;
 				Node* del = searchNode(deletePos, k);
-				if (!del)
+				if (!del || del == m_lastElem)
 					return false;
-				if (!del->parent)
+				if (!del->parent || del->parent == m_lastElem)
 				{
 					if (del->left == m_lastElem && del->right == m_lastElem)
 					{
@@ -532,25 +584,25 @@ namespace ft
 						m_lastElem->left = m_lastElem;
 						m_lastElem->right = m_lastElem;
 					}
-					else if (del->left && del->right == m_lastElem)
+					else if (del->left && del->left != m_lastElem && del->right == m_lastElem)
 					{
 						balanceNode = del->parent;
 						m_root = del->left;
-						del->left->parent = 0;
+						del->left->parent = m_lastElem;
 						m_lastElem->left = del->left;
 						del->left->right = m_lastElem;
 					}
-					else if (del->left == m_lastElem && del->right)
+					else if (del->left == m_lastElem && del->right && del->right != m_lastElem)
 					{
 						balanceNode = del->parent;
 						m_root = del->right;
-						del->right->parent = 0;
+						del->right->parent = m_lastElem;
 						m_lastElem->right = del->right;
 						del->right->left = m_lastElem;
 					}
 					else
 					{
-						Node* maxNode = searchMaxNode(del->left);
+						Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
 						m_allocPair.destroy(&del->content);
 						m_allocPair.construct(&del->content, maxNode->content);
 						return deleteNode(del->left, maxNode->content.first);
@@ -595,7 +647,7 @@ namespace ft
 				}
 				else
 				{
-					Node* maxNode = searchMaxNode(del->left);
+					Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
 					m_allocPair.destroy(&del->content);
 					m_allocPair.construct(&del->content, maxNode->content);
 					return deleteNode(del->left, maxNode->content.first);
@@ -608,15 +660,9 @@ namespace ft
 			// Compares the heights of left and right subtrees.
 			int balanceOfSubtrees(Node* node)
 			{
-	std::cout << __LINE__ << std::endl;
-				if (!node)
-				{
-	std::cout << __LINE__ << std::endl;
+				if (!node || node == m_lastElem)
 					return 0;
-				}
-	std::cout << __LINE__ << std::endl;
 				return heightTree(node->left, 1) - heightTree(node->right, 1);
-	std::cout << __LINE__ << std::endl;
 			}
 
 			// RIGHT ROTATION
@@ -664,41 +710,25 @@ namespace ft
             //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
 			void balanceTheTree(Node** root, Node* node)
 			{
-				while (node)
+				while (node && node != m_lastElem)
 				{
-				std::cout << __LINE__ << std::endl;
 					int balance = balanceOfSubtrees(node);
-				std::cout << __LINE__ << std::endl;
 					if (balance < -1 && balanceOfSubtrees(node->right) < 0)
-					{
-				std::cout << __LINE__ << std::endl;
 						rotateLeft(root, node);
-				std::cout << __LINE__ << std::endl;
-					}
 					else if (balance < -1 && balanceOfSubtrees(node->right) >= 0)
 					{
-				std::cout << __LINE__ << std::endl;
 						rotateRight(root, node->right);
 						rotateLeft(root, node);
-				std::cout << __LINE__ << std::endl;
 					}
 					else if (balance > 1 && balanceOfSubtrees(node->left) > 0)
-					{
-				std::cout << __LINE__ << std::endl;
 						rotateRight(root, node);
-				std::cout << __LINE__ << std::endl;
-					}
 					else if (balance > 1 && balanceOfSubtrees(node->left) <= 0)
 					{
-				std::cout << __LINE__ << std::endl;
 						rotateLeft(root, node->left);
 						rotateRight(root, node);
-				std::cout << __LINE__ << std::endl;
 					}
 					node = node->parent;
-				std::cout << __LINE__ << std::endl;
 				}
-				std::cout << __LINE__ << std::endl;
 			}
 	};
 

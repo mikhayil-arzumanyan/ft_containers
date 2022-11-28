@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/26 19:35:00 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/28 22:39:27 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,13 @@
 #include <cmath>
 #include <functional>
 #include <exception>
+#include <iostream>
 
 namespace ft
 {
+	template<typename T>
+	struct Node;
+
 	// Pair.
 	template <typename T1, typename T2>
 	class pair
@@ -135,14 +139,13 @@ namespace ft
 	// Compare		The predicate used to sort the bynary tree.
 	// Node			The structure used as nodes in the binary tree.
 	// B 			Boolean to indicate if it's an iterator / a const iterator.
-	template <typename Key, typename T, typename Compare, typename Node, bool B>
+	template < typename T, bool B>
 	class map_iterator
 	{
 		public:
-			typedef Key																	key_type;	
-			typedef Compare																key_compare;
-			typedef T																	mapped_type;
-			typedef ft::pair<const Key, T>												value_type;
+			typedef ft:: Node<T>														Node;
+			
+			typedef T																	value_type;
 			typedef long int															difference_type;
 			typedef size_t																size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
@@ -152,21 +155,19 @@ namespace ft
 		private:
 			nodePtr			m_node;
 			nodePtr			m_lastElem;
-			key_compare		m_comp;
 		public:
 
 // __ Constructors & Destructor
 
 			// Default.
-			map_iterator(nodePtr node = 0, nodePtr lastElem = 0, const key_compare& comp = key_compare()) :
-				m_node(node), m_lastElem(lastElem), m_comp(comp) {}
+			map_iterator(nodePtr node = 0, nodePtr lastElem = 0) :
+				m_node(node), m_lastElem(lastElem) {}
 
 			// Copy.
-			map_iterator(const map_iterator<Key, T, Compare, Node, false>& copy)
+			map_iterator(const map_iterator< T, false>& copy)
 			{
 				m_node = copy.getNode();
 				m_lastElem = copy.getLastElem();
-				m_comp = copy.getCompare();
 			}
 
 			// Destroy.
@@ -179,7 +180,6 @@ namespace ft
 				{
 					m_node = assign.m_node;
 					m_lastElem = assign.m_lastElem;
-					m_comp = assign.m_comp;
 				}
 				return (*this);
 			}
@@ -188,7 +188,6 @@ namespace ft
 
 			nodePtr getNode() const { return m_node; }
 			nodePtr getLastElem() const { return m_lastElem; }
-			key_compare getCompare() const { return m_comp; }
 
 // __ Operators
 
@@ -196,98 +195,28 @@ namespace ft
 			pointer operator->() const { return (&m_node->content); }
 			map_iterator& operator++()
 			{
-				nodePtr previousNode = m_node;
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->right;
-					return (*this);
-				}
-				while (m_node != m_lastElem && !m_comp(previousNode->content.first, m_node->content.first))
-				{
-					if (m_node->right && (m_node->right == m_lastElem ||
-								m_comp(previousNode->content.first, m_node->content.first)))
-					{
-						m_node = m_node->right;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMinNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
+				m_node = Node::increment(m_node, m_lastElem);
 				return (*this);
 			}
 
 			map_iterator operator++(int)
 			{
-				map_iterator res(*this);
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->right;
-					return (res);
-				}
-				while (m_node != m_lastElem && !m_comp(res->first, m_node->content.first))
-				{
-					if (m_node->right && (m_node->right == m_lastElem ||
-								m_comp(res->first, m_node->right->content.first)))
-					{
-						m_node = m_node->right;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMinNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
-				return (res);
+				map_iterator tmp(*this);
+				++(*this);
+				return (tmp);
 			}
 
 			map_iterator& operator--()
 			{
-				nodePtr previousNode = m_node;
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->left;
-					return (*this);
-				}
-				while (m_node != m_lastElem && !m_comp(m_node->content.first, previousNode->content.first))
-				{
-					if (m_node->left && (m_node->left == m_lastElem ||
-								m_comp(m_node->left->content.first, previousNode->content.first)))
-					{
-						m_node = m_node->left;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMaxNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
+				m_node = Node::decrement(m_node, m_lastElem);
 				return (*this);
 			}
 
 			map_iterator operator--(int)
 			{
-				map_iterator res(*this);
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->left;
-					return (res);
-				}
-				while (m_node != m_lastElem && !m_comp(m_node->content.first, res->first))
-				{
-					if (m_node->left && (m_node->left == m_lastElem ||
-								m_comp(m_node->left->content.first, res->first)))
-					{
-						m_node = m_node->left;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMaxNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
-				return (res);
+				map_iterator tmp(*this);
+				--(*this);
+				return (tmp);
 			}
 
 			bool operator==(const map_iterator& it) const { return (it.m_node == m_node); }
@@ -310,14 +239,13 @@ namespace ft
 	};
 
 	// Revers map iterator.
-	template<typename Key, typename T, typename Compare, typename Node, bool B>
+	template<typename T,  bool B>
 	class rev_map_iterator
 	{
+
+		typedef ft::Node<T>												Node;
 		public:
-			typedef Key													key_type;
-			typedef Compare												key_compare;
-			typedef T													mapped_type;
-			typedef ft::pair<const Key, T>								value_type;
+			typedef T													value_type;
 			typedef long int											difference_type;
 			typedef size_t												size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
@@ -327,30 +255,27 @@ namespace ft
 		private:
 			nodePtr			m_node;
 			nodePtr			m_lastElem;
-			key_compare		m_comp;
 	
 		public:
 // __ Constructors & Destructor
 
 			// Default.
-			rev_map_iterator(nodePtr node = 0, nodePtr lastElem = 0, const key_compare& comp = key_compare()) :
-				m_node(node), m_lastElem(lastElem), m_comp(comp) {}
+			rev_map_iterator(nodePtr node = 0, nodePtr lastElem = 0) :
+				m_node(node), m_lastElem(lastElem) {}
 
 			// Copy.
-			rev_map_iterator(const rev_map_iterator<Key, T, Compare, Node, false>& copy)
+			rev_map_iterator(const rev_map_iterator<T, false>& copy)
 			{
 				m_node = copy.getNonConstNode();
 				m_lastElem = copy.getNonConstLastElem();
-				m_comp = copy.getCompare();
 			}
 
 			// Convert.
-			explicit rev_map_iterator(map_iterator<Key, T, Compare, Node, false> copy)
+			explicit rev_map_iterator(map_iterator<T, false>& copy)
 			{
 				--copy;
 				m_node = copy.getNonConstNode();
 				m_lastElem = copy.getNonConstLastElem();
-				m_comp = copy.getCompare();
 			}
 
 			// Destroy.
@@ -363,7 +288,6 @@ namespace ft
 				{
 					m_node = assign.m_node;
 					m_lastElem = assign.m_lastElem;
-					m_comp = assign.m_comp;
 				}
 				return (*this);
 			}
@@ -372,7 +296,6 @@ namespace ft
 
 			nodePtr getNonConstNode() const { return m_node; }
 			nodePtr getNonConstLastElem() const { return m_lastElem; }
-			key_compare getCompare() const { return m_comp; }
 
 // __ Operators
 
@@ -381,98 +304,28 @@ namespace ft
 
 			rev_map_iterator& operator++()
 			{
-				nodePtr previousNode = m_node;
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->left;
-					return (*this);
-				}
-				while (m_node != m_lastElem && !m_comp(m_node->content.first, previousNode->content.first))
-				{
-					if (m_node->left && (m_node->left == m_lastElem ||
-								m_comp(m_node->left->content.first, previousNode->content.first)))
-					{
-						m_node = m_node->left;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMaxNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
+				m_node = Node::decrement(m_node, m_lastElem);
 				return (*this);
 			}
 
 			rev_map_iterator operator++(int)
 			{
-				rev_map_iterator res(*this);
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->left;
-					return (res);
-				}
-				while (m_node != m_lastElem && !m_comp(m_node->content.first, res->first))
-				{
-					if (m_node->left && (m_node->left == m_lastElem ||
-								m_comp(m_node->left->content.first, res->first)))
-					{
-						m_node = m_node->left;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMaxNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
-				return (res);
+				rev_map_iterator tmp(*this);
+				++(*this);
+				return (tmp);
 			}
 
 			rev_map_iterator& operator--()
 			{
-				nodePtr previousNode = m_node;
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->right;
-					return (*this);
-				}
-				while (m_node != m_lastElem && !m_comp(previousNode->content.first, m_node->content.first))
-				{
-					if (m_node->right && (m_node->right == m_lastElem ||
-								m_comp(previousNode->content.first, m_node->right->content.first)))
-					{
-						m_node = m_node->right;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMinNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
+				m_node = Node::increment(m_node, m_lastElem);
 				return (*this);
 			}
 
 			rev_map_iterator operator--(int)
 			{
-				rev_map_iterator res(*this);
-				if (m_node == m_lastElem)
-				{
-					m_node = m_lastElem->right;
-					return (res);
-				}
-				while (m_node != m_lastElem && !m_comp(res->first, m_node->content.first))
-				{
-					if (m_node->right && (m_node->right == m_lastElem ||
-								m_comp(res->first, m_node->right->content.first)))
-					{
-						m_node = m_node->right;
-						Node* tmp = 0;
-						if (m_node != m_lastElem && (tmp = searchMinNode(m_node)))
-							m_node = tmp;
-					}
-					else
-						m_node = m_node->parent;
-				}
-				return (res);
+				rev_map_iterator tmp(*this);
+				--(*this);
+				return (tmp);
 			}
 
 			bool operator==(const rev_map_iterator& it) const { return (it.m_node == m_node); }

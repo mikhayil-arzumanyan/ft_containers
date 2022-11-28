@@ -154,23 +154,23 @@ static void	example2()
 	ft_A.insert(ft::make_pair(-1, "B"));
 
 
-	//std::cout << ", size: " << ft_A.size();
-	//ft_A.insert(ft::make_pair(1, "C"));
-	//std::cout << ", pair -> first: " << ft_pair1.first;
-	//std::cout << ", second: " << ft_pair1.second;
-	//std::cout << ", size: " << ft_A.size();
-	//std::cout << ", size: " << ft_A.max_size();
-	//std::cout << ", empty: " << ft_A.empty();
-//	ft_it1 = ft_A.begin();
-//	std::cout << ", it: " << (*ft_it1).first;
-//	std::cout << ", " << ft_it1->first;
-//	std::cout << ", " << ft_it1->second;
-//	std::cout << ", " << (ft_it1++)->first;
-//	std::cout << ", " << (++ft_it1)->first;
-//	std::cout << ", " << (--ft_it1)->second;
-//	std::cout << ", " << (ft_it1--)->second;
-//	std::cout << ", " << ft_it1->second;
-//	std::cout << '.' << COLOR_END << std::endl << std::endl;
+	std::cout << ", size: " << ft_A.size();
+	ft_A.insert(ft::make_pair(1, "C"));
+	std::cout << ", pair -> first: " << ft_pair1.first;
+	std::cout << ", second: " << ft_pair1.second;
+	std::cout << ", size: " << ft_A.size();
+	std::cout << ", size: " << ft_A.max_size();
+	std::cout << ", empty: " << ft_A.empty();
+	ft_it1 = ft_A.begin();
+	std::cout << ", it: " << (*ft_it1).first;
+	std::cout << ", " << ft_it1->first;
+	std::cout << ", " << ft_it1->second;
+	std::cout << ", " << (ft_it1++)->first;
+	std::cout << ", " << (++ft_it1)->first;
+	std::cout << ", " << (--ft_it1)->second;
+	std::cout << ", " << (ft_it1--)->second;
+	std::cout << ", " << ft_it1->second;
+	std::cout << '.' << COLOR_END << std::endl << std::endl;
 }
 
 static void	example3()
