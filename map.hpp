@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/28 22:42:14 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/29 20:18:21 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ namespace ft
 		// Searches for the element with the highest key in the tree.
 		static Node* searchMaxNode(Node *root, Node* m_lastElem)
 		{
-			if (root->right && root->right != m_lastElem)
-				return searchMaxNode(root->right, m_lastElem);
+			while (root && root != m_lastElem && root->right && root->right != m_lastElem)
+				root = root->right;
 			return root;
 		}
 
 		// Searches for the element with the lowest key in the tree.
 		static Node* searchMinNode(Node *root, Node* m_lastElem)
 		{
-			if (root->left && root->left != m_lastElem)
-				return searchMinNode(root->left, m_lastElem);
+			while (root && root != m_lastElem && root->left && root->left != m_lastElem)
+				root = root->left;
 			return root;
 		}
 
@@ -58,14 +58,13 @@ namespace ft
 				node = Node::searchMinNode(node->right, m_lastElem);
 			else
 			{
-				node = node->parent;
-				while(node != m_lastElem && node == m_node->right)
+				Node* tmp_node = node->parent;
+				while(tmp_node != m_lastElem && tmp_node->right == m_node)
 				{
-					node = m_node;
-					m_node = m_node->parent;
+					m_node = tmp_node;
+					tmp_node = tmp_node->parent;
 				}
-				if (node->parent != m_lastElem)
-					node = m_node;
+				node = tmp_node;
 			}
 			return node;
 
@@ -84,14 +83,14 @@ namespace ft
 				node = Node::searchMaxNode(node->left, m_lastElem);
 			else
 			{
-				node = node->parent;
-				while(node != m_lastElem && node == m_node->left)
+
+				Node* tmp_node = node->parent;
+				while(tmp_node != m_lastElem && tmp_node->left == m_node)
 				{
-					node = m_node;
-					m_node = m_node->parent;
+					m_node = tmp_node;
+					tmp_node = tmp_node->parent;
 				}
-				if (node->parent != m_lastElem)
-					node = m_node;
+				node = tmp_node;
 			}
 			return node;
 		}
@@ -122,9 +121,9 @@ namespace ft
 			typedef const T*							const_pointer;
 
 			typedef typename ft::map_iterator<value_type, false>		iterator;
-			typedef typename ft::map_iterator<value_type, true>		const_iterator;
+			typedef typename ft::map_iterator<value_type, true>			const_iterator;
 			typedef typename ft::rev_map_iterator<value_type, false>	reverse_iterator;
-			typedef typename ft::rev_map_iterator<value_type, true>	const_reverse_iterator;
+			typedef typename ft::rev_map_iterator<value_type, true>		const_reverse_iterator;
 		public:
 			// Member classes.
 			class value_compare
@@ -162,8 +161,8 @@ namespace ft
 				m_lastElem = createNode(ft::pair<const Key, T>());
 				m_lastElem->left = 0;
 				m_lastElem->right = 0;
-				m_lastElem->parent = 0;
 				m_root = m_lastElem;
+				m_lastElem->parent = m_root;
 			}
 
 			// Range.
@@ -536,8 +535,6 @@ namespace ft
 					m_root->left = m_lastElem;
 					m_root->right = m_lastElem;
 					m_root->parent = m_lastElem;
-					m_lastElem->left = m_root;
-					m_lastElem->right = m_root;
 					return m_root;
 				}
 				if (insertPos->content.first == pair.first)
@@ -565,8 +562,45 @@ namespace ft
 				}
 				newNode->parent = insertPos;
 				balanceTheTree(&m_root, newNode);
+				m_root->parent = m_lastElem;
 				return newNode;
 			}
+
+			//
+			void transplant(Node* node_1, Node* node_2)
+			{
+				if (isSentinel(node_1->parent))
+					m_root = node_2;
+				else if (node_1 == node_1->parent->left)
+					node_1->parent->left = node_2;
+				else
+					node_1->parent->right = node_2;
+				if (!isSentinel(node_2))
+					node_2->parent = node_1->parent;
+			}
+
+			//
+			void treeDelete(Node* del)
+			{
+				if (isSentinel(del->left))
+					transplant(del, del->right);
+				else if (isSentinel(del->right))
+					transplant(del, del->left);
+				else
+				{
+					Node* minNode = Node::searchMinNode(del->right, m_lastElem);
+					if (minNode->parent != del)
+					{
+						transplant(minNode, minNode->right);
+						minNode->right = del->right;
+						minNode->right->parent = minNode;
+					}
+					transplant(del, minNode);
+					minNode->left = del->left;
+					minNode->left->parent = minNode;
+				}
+			}
+
 
 			// Deletes the node that matches key from the tree or a specific subtree, and then equilibrates the 
             // AVL tree if necessary. If element is missing, this function does nothing.
@@ -576,84 +610,86 @@ namespace ft
 				Node* del = searchNode(deletePos, k);
 				if (!del || del == m_lastElem)
 					return false;
-				if (!del->parent || del->parent == m_lastElem)
-				{
-					if (del->left == m_lastElem && del->right == m_lastElem)
-					{
-						m_root = m_lastElem;
-						m_lastElem->left = m_lastElem;
-						m_lastElem->right = m_lastElem;
-					}
-					else if (del->left && del->left != m_lastElem && del->right == m_lastElem)
-					{
-						balanceNode = del->parent;
-						m_root = del->left;
-						del->left->parent = m_lastElem;
-						m_lastElem->left = del->left;
-						del->left->right = m_lastElem;
-					}
-					else if (del->left == m_lastElem && del->right && del->right != m_lastElem)
-					{
-						balanceNode = del->parent;
-						m_root = del->right;
-						del->right->parent = m_lastElem;
-						m_lastElem->right = del->right;
-						del->right->left = m_lastElem;
-					}
-					else
-					{
-						Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
-						m_allocPair.destroy(&del->content);
-						m_allocPair.construct(&del->content, maxNode->content);
-						return deleteNode(del->left, maxNode->content.first);
-					}
-				}
-				else if ((!del->left || del->left == m_lastElem) && (!del->right || del->right == m_lastElem))
-				{
-					balanceNode = del->parent;
-					Node* linkToParent = 0;
-					if (del->left == m_lastElem || del->right == m_lastElem)
-					{
-						linkToParent = m_lastElem;
-						del->content.first <= del->parent->content.first ? m_lastElem->right = del->parent :
-							m_lastElem->left = del->parent;
-					}
-					del->content.first <= del->parent->content.first ? del->parent->left = del->parent :
-						del->parent->right = linkToParent;
-				}
-				else if ((del->left && del->left != m_lastElem) && (!del->right || del->right == m_lastElem))
-				{
-					balanceNode = del->parent;
-					del->content.first <= del->parent->content.first ? del->parent->left = del->left :
-						del->parent->right = del->left;
-					del->left->parent = del->parent;
-					if (del->right == m_lastElem)
-					{
-						m_lastElem->left = del->left;
-						del->left->right = m_lastElem;
-					}
-				}
-				else if ((!del->left || del->left == m_lastElem) && del->right && del->right != m_lastElem)
-				{
-					balanceNode = del->parent;
-					del->content.first <= del->parent->content.first ? del->parent->left = del->right :
-						del->parent->right = del->right;
-					del->right->parent = del->parent;
-					if (del->left == m_lastElem)
-					{
-						m_lastElem->right = del->right;
-						del->right->left = m_lastElem;
-					}
-				}
-				else
-				{
-					Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
-					m_allocPair.destroy(&del->content);
-					m_allocPair.construct(&del->content, maxNode->content);
-					return deleteNode(del->left, maxNode->content.first);
-				}
+				treeDelete(del);
+				balanceNode = del->parent;
+			//	if (!del->parent || del->parent == m_lastElem)
+			//	{
+			//		if (del->left == m_lastElem && del->right == m_lastElem)
+			//		{
+			//			m_root = m_lastElem;
+			//			m_lastElem->left = m_lastElem;
+			//			m_lastElem->right = m_lastElem;
+			//		}
+			//		else if (del->left && del->left != m_lastElem && del->right == m_lastElem)
+			//		{
+			//			balanceNode = del->parent;
+			//			m_root = del->left;
+			//			del->left->parent = m_lastElem;
+			//			m_lastElem->left = del->left;
+			//			del->left->right = m_lastElem;
+			//		}
+			//		else if (del->left == m_lastElem && del->right && del->right != m_lastElem)
+			//		{
+			//			balanceNode = del->parent;
+			//			m_root = del->right;
+			//			del->right->parent = m_lastElem;
+			//			m_lastElem->right = del->right;
+			//			del->right->left = m_lastElem;
+			//		}
+			//		else
+			//		{
+			//			Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
+			//			m_allocPair.destroy(&del->content);
+			//			m_allocPair.construct(&del->content, maxNode->content);
+			//			return deleteNode(del->left, maxNode->content.first);
+			//		}
+			//	}
+			//	else if ((!del->left || del->left == m_lastElem) && (!del->right || del->right == m_lastElem))
+			//	{
+			//		balanceNode = del->parent;
+			//		Node* linkToParent = 0;
+			//		if (del->left == m_lastElem || del->right == m_lastElem)
+			//		{
+			//			linkToParent = m_lastElem;
+			//			del->content.first <= del->parent->content.first ? m_lastElem->right = del->parent :
+			//				m_lastElem->left = del->parent;
+			//		}
+			//		del->content.first <= del->parent->content.first ? del->parent->left = del->parent :
+			//			del->parent->right = linkToParent;
+			//	}
+			//	else if ((del->left && del->left != m_lastElem) && (!del->right || del->right == m_lastElem))
+			//	{
+			//		balanceNode = del->parent;
+			//		del->content.first <= del->parent->content.first ? del->parent->left = del->left :
+			//			del->parent->right = del->left;
+			//		del->left->parent = del->parent;
+			//		if (del->right == m_lastElem)
+			//		{
+			//			m_lastElem->left = del->left;
+			//			del->left->right = m_lastElem;
+			//		}
+			//	}
+			//	else if ((!del->left || del->left == m_lastElem) && del->right && del->right != m_lastElem)
+			//	{
+			//		balanceNode = del->parent;
+			//		del->content.first <= del->parent->content.first ? del->parent->left = del->right :
+			//			del->parent->right = del->right;
+			//		del->right->parent = del->parent;
+			//		if (del->left == m_lastElem)
+			//		{
+			//			m_lastElem->right = del->right;
+			//			del->right->left = m_lastElem;
+			//		}
+			//	}
+			//	else
+			//	{
+			//		Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
+			//		m_allocPair.destroy(&del->content);
+			//		m_allocPair.construct(&del->content, maxNode->content);
+			//		return deleteNode(del->left, maxNode->content.first);
+			//	}
 				balanceTheTree(&m_root, balanceNode);
-				deallocateNode(del);
+				//deallocateNode(del);
 				return true;
 			}
 
@@ -710,7 +746,7 @@ namespace ft
             //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
 			void balanceTheTree(Node** root, Node* node)
 			{
-				while (node && node != m_lastElem)
+				while (!isSentinel(node))
 				{
 					int balance = balanceOfSubtrees(node);
 					if (balance < -1 && balanceOfSubtrees(node->right) < 0)

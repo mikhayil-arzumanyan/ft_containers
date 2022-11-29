@@ -108,8 +108,8 @@ static void	example2()
 	/* Example for iterators */
 
 	std::pair<int, std::string>	pair1;
-	pair1.first = 0; 
-	pair1.second = "A"; 
+	pair1.first = 0;
+	pair1.second = "A";
 	std::map<int, std::string> A;
 	std::map<int, std::string>::iterator it1;
 	std::cout << COLOR_PURPLE_B << "Example 2" << COLOR_END << std::endl;
@@ -140,8 +140,8 @@ static void	example2()
 	std::cout << '.' << COLOR_END << std::endl;
 
 	ft::pair<int, std::string>	ft_pair1;
-	ft_pair1.first = 0; 
-	ft_pair1.second = "A"; 
+	ft_pair1.first = 0;
+	ft_pair1.second = "A";
 	ft::map<int, std::string> ft_A;
 	ft::map<int, std::string>::iterator ft_it1;
 	std::cout << COLOR_GREEN_B;
@@ -152,8 +152,6 @@ static void	example2()
 	ft_A.insert(ft_pair1);
 	std::cout << ", size: " << ft_A.size();
 	ft_A.insert(ft::make_pair(-1, "B"));
-
-
 	std::cout << ", size: " << ft_A.size();
 	ft_A.insert(ft::make_pair(1, "C"));
 	std::cout << ", pair -> first: " << ft_pair1.first;
@@ -1529,11 +1527,11 @@ static void	example21()
 	std::cout << '.' << COLOR_END << std::endl << std::endl;
 }
 
-//static void	example22()
-//{
+static void	example22()
+{
 	/* Example 22 */
 	/* Example from bounds */
-/*
+
 	std::cout << COLOR_PURPLE_B << "Example 22" << COLOR_END << std::endl;
 	std::cout << COLOR_YELLOW_B;
 	std::cout << "std::map -> ";
@@ -1572,13 +1570,13 @@ static void	example21()
 	for (std::vector<int>::iterator ft_it1 = ft_v.begin(); ft_it1 != ft_v.end(); ++ft_it1)
 		std::cout << " " << *ft_it1;
 	std::cout << '.' << COLOR_END << std::endl;
-}*/
+}
 
 void	map_test()
 {
 	example1();
 	example2();
-//	example3();
+	example3();
 //	example4();
 //	example5();
 //	example6();
