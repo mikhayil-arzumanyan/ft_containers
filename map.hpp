@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/30 17:59:08 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/30 20:29:24 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,23 @@ namespace ft
 			typedef typename ft::rev_map_iterator<value_type, true>		const_reverse_iterator;
 		public:
 			// Member classes.
+			
+			/*
+			class value_compare : std::binary_function<value_type, value_type, bool>
+			{
+				public:
+					value_compare(key_compare c) : comp(c) {}
+					bool operator()(const value_type &lhs, const value_type &rhs) const
+					{
+						return (this->comp(lhs.first, rhs.first));
+					}
+				protected:
+					key_compare comp;
+				private:
+					friend class map<key_type, value_type, key_compare, allocator_type>;
+			};
+			*/
+
 			class value_compare
 			{
 				friend class map;
@@ -136,7 +153,7 @@ namespace ft
 					typedef bool		result_type;
 					typedef value_type	first_argument_type;
 					typedef value_type	second_argument_type;
-					bool operator() (const value_type a, const value_type b) const
+					bool operator() (const value_type &a, const value_type &b) const
 					{
 						return comp(a.first, b.first);
 					}
