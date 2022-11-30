@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/29 20:18:21 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/11/30 17:59:08 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,6 +276,7 @@ namespace ft
 				if (elemIsPresent && elemIsPresent != m_lastElem)
 					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem), false);
 				++m_size;
+				m_lastElem->parent = m_root;
 				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem), true));
 			}
 
@@ -305,6 +306,7 @@ namespace ft
 				if (position != end() && val.first == position->first)
 					return position;
 				++m_size;
+				m_lastElem->parent = m_root;
 				return iterator(insertNode(position.getNode(), val), m_lastElem);
 			}
 
@@ -322,6 +324,7 @@ namespace ft
 			{
 				deleteNode(position.getNode(), position->first);
 				--m_size;
+				m_lastElem->parent = m_root;
 			}
 
 			// Removes one element on a specific key.
@@ -329,6 +332,7 @@ namespace ft
 			{
 				size_type ret = deleteNode(m_root, k);
 				m_size -= ret;
+				m_lastElem->parent = m_root;
 				return ret;
 			}
 
