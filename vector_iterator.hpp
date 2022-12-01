@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:31:05 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/22 16:57:51 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 18:18:42 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,12 @@ namespace ft
 	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 	InputIterator2 first2, InputIterator2 last2)
 	{
-		while (first1 != last1)
+		while (first1 != last1 && first2 != last2)
 		{
-			if (first2 == last2 || *first2 < *first1)
-				return false;
-			else if (*first1 < *first2)
+			if (*first1 < *first2)
 				return true;
+			if (*first2 < *first1)
+				return false;
 			++first1;
 			++first2;
 		}
@@ -91,7 +91,7 @@ namespace ft
 		typedef typename Iter::difference_type difference_type;
 		typedef typename Iter::value_type value_type;
 		typedef typename Iter::pointer pointer;
-		typedef typename Iter::referance referance;
+		typedef typename Iter::reference reference;
 		typedef typename Iter::iterator_category iterator_category;
 	};
 	template <class T> struct iterator_traits<T*>
@@ -99,7 +99,7 @@ namespace ft
 		typedef std::ptrdiff_t difference_type;
 		typedef T value_type;
 		typedef T* pointer;
-		typedef T& referance;
+		typedef T& reference;
 		typedef std::random_access_iterator_tag iterator_category;
 	};
 	template <class T> struct iterator_traits<const T*>
@@ -107,7 +107,7 @@ namespace ft
 		typedef std::ptrdiff_t difference_type;
 		typedef T value_type;
 		typedef T* pointer;
-		typedef T& referance;
+		typedef T& reference;
 		typedef std::random_access_iterator_tag iterator_category;
 	};
 
@@ -116,7 +116,7 @@ namespace ft
 	{
 		public:
 			typedef T								*pointer;
-			typedef T								&referance;
+			typedef T								&reference;
 			typedef T								value_type;
 			typedef std::ptrdiff_t					difference_type;
 			typedef std::random_access_iterator_tag	iterator_category;
@@ -138,7 +138,7 @@ namespace ft
 
 			pointer base() const { return ptr; }
 			pointer operator->() const { return ptr; }
-			referance operator*() const { return *ptr; }
+			reference operator*() const { return *ptr; }
 			random_access_iterator &operator++()
 			{
 				++ptr;
@@ -171,7 +171,7 @@ namespace ft
 			difference_type operator-(const random_access_iterator &it) const { return ptr - it.ptr; }
 			random_access_iterator operator+=(difference_type n) { ptr += n; return *this; }
 			random_access_iterator operator-=(difference_type n) { ptr -= n; return *this; }
-			referance operator[](difference_type n) const { return ptr[n]; }
+			reference operator[](difference_type n) const { return ptr[n]; }
 	};
 
 	// Non Member Functions random access iterator.
@@ -236,7 +236,7 @@ namespace ft
 			typedef typename iterator_traits<Iter>::value_type			value_type;
 			typedef typename iterator_traits<Iter>::difference_type		difference_type;
 			typedef typename iterator_traits<Iter>::pointer				pointer;
-			typedef typename iterator_traits<Iter>::referance			referance;
+			typedef typename iterator_traits<Iter>::reference			reference;
 		private:
 			iterator_type	baseIter;
 		public:
@@ -253,14 +253,18 @@ namespace ft
 			}
 			iterator_type		base() const
 			{ return baseIter; }
-			referance			operator*() const
+			reference			operator*() const
 			{
 				iterator_type tmp = baseIter;
 				return *--tmp;
 			}
 			pointer				operator->() const
-			{ return base() - 1; }
-			referance			operator[](difference_type n) const
+			{
+				iterator_type tmp(baseIter);
+				--tmp;
+				return tmp.operator->();
+			}
+			reference			operator[](difference_type n) const
 			{ return base()[-n-1]; }
 			reverse_iterator	&operator++()
 			{

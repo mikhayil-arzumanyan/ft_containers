@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:29:09 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/22 16:55:08 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 17:50:45 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ namespace ft
 			allocator_type get_allocator() const { return m_alloc; }
 
 			// Assign fill.
-			void assign(value_type count, const value_type& val)
+			void assign(size_type count, const value_type& val)
 			{
 				while (m_size > 0)
 					pop_back();
@@ -146,7 +146,7 @@ namespace ft
 					m_data = m_alloc.allocate(count);
 					m_capacity = count;
 				}
-				value_type i = 0;
+				size_type i = 0;
 				while (i < count)
 				{
 					m_alloc.construct(m_data + i, val);
@@ -162,14 +162,14 @@ namespace ft
 			{
 				while (m_size > 0)
 					pop_back();
-				value_type count = ft::distance(first, last);
+				size_type count = ft::distance(first, last);
 				if (count > m_capacity)
 				{
 					m_alloc.deallocate(m_data, m_capacity);
 					m_data = m_alloc.allocate(count);
 					m_capacity = count;
 				}
-				value_type i = 0;
+				size_type i = 0;
 				while (i < count)
 				{
 					m_alloc.construct(m_data + i, *first);
@@ -232,7 +232,7 @@ namespace ft
 			}
 	
 			// Insert fill.
-			void insert(iterator pos, value_type count, const T& value)
+			void insert(iterator pos, size_type count, const T& value)
 			{
 				pointer		tmp;
 				size_type	start;
@@ -366,9 +366,9 @@ namespace ft
 			// Erase single element.
 			iterator erase(iterator pos)
 			{
-				value_type index = pos - begin();
+				size_type index = pos - begin();
 				m_alloc.destroy(m_data + index);
-				value_type i = index;
+				size_type i = index;
 				while (i < m_size - 1)
 				{
 					m_alloc.construct(m_data + i, m_data[i + 1]);
@@ -381,14 +381,14 @@ namespace ft
 			// Erase range.
 			iterator erase(iterator first, iterator last)
 			{
-				value_type index = first - begin();
-				value_type count = last - first;
+				size_type index = first - begin();
+				size_type count = last - first;
 				while (first != last)
 				{
 					m_alloc.destroy(first.base());
 					first++;
 				}
-				value_type temp = index;
+				size_type temp = index;
 				while (last < this->end())
 				{
 					m_alloc.construct(m_data + temp, *last);
@@ -400,7 +400,7 @@ namespace ft
 			}
 
 			// Push Back.
-			void push_back(const value_type val)
+			void push_back(const value_type& val)
 			{
 				if (m_size == m_capacity)
 				{
@@ -429,11 +429,11 @@ namespace ft
 			}
 
 			// Resize.
-			void resize (value_type count, value_type val = value_type())
+			void resize (size_type count, const value_type& val = value_type())
 			{
 				if (m_size > count)
 				{
-					value_type i = count;
+					size_type i = count;
 					while (i > m_size)
 					{
 						m_alloc.destroy(m_data + i);
@@ -452,7 +452,7 @@ namespace ft
 							new_cap = count;
 						reserve(new_cap);
 					}
-					value_type i = m_size;
+					size_type i = m_size;
 					while (i < count)
 					{
 						m_alloc.construct(m_data + i, val);
@@ -525,23 +525,23 @@ namespace ft
 
 			template <typename T, typename Alloc>
 			bool operator!=(const ft::vector<T,Alloc> &v1, const ft::vector<T,Alloc> &v2)
-			{ return v1.size() != v2.size() || !ft::equal(v1.begin(), v1.end(), v2.begin()); }
+			{ return !(v1 == v2); }
 
 			template <typename T, typename Alloc>
 			bool operator>(const ft::vector<T,Alloc> &v1, const ft::vector<T,Alloc> &v2)
-			{ return ft::lexicographical_compare(v2.begin(), v2.end(), v1.begin(), v1.end()); }
+			{ return v2 < v1; }
 
 			template <typename T, typename Alloc>
-			bool operator<(const ft::vector<T,Alloc> &v1, const ft::vector<T,Alloc> &v2)
+			bool operator<(const ft::vector<T,Alloc> &v1, const ft::vector<T,Alloc>& v2)
 			{ return ft::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end()); }
 
 			template <typename T, typename Alloc>
 			bool operator>=(const ft::vector<T,Alloc> &v1, const ft::vector<T,Alloc> &v2)
-			{ return !ft::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end()); }
+			{ return !(v1 < v2); }
 
 			template <typename T, typename Alloc>
 			bool operator<=(const ft::vector<T, Alloc> &v1, const ft::vector<T,Alloc> &v2)
-			{ return !ft::lexicographical_compare(v2.begin(), v2.end(), v1.begin(), v1.end()); }
+			{ return !(v2 < v1); }
 
 			template <typename T, typename Alloc>
 			void swap(vector<T,Alloc> &x, vector<T,Alloc> &y)

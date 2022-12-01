@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 17:21:41 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 18:58:36 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <functional>
 #include <exception>
 #include <iostream>
+#include "vector_iterator.hpp"
 
 namespace ft
 {
@@ -79,40 +80,6 @@ namespace ft
 	bool operator>=(const pair<T1, T2> &lhs, const pair<T1, T2> &rhs)
 	{ return (!(lhs < rhs)); }
 
-	// Is integral.
-	template <typename T>
-	struct is_integral { static const bool value = false; };
-
-	template <>
-	struct is_integral<bool> { static const bool value = true; };
-
-	template <>
-	struct is_integral<char> { static const bool value = true; };
-
-	template <>
-	struct is_integral<short> { static const bool value = true; };
-
-	template <>
-	struct is_integral<int> { static const bool value = true; };
-
-	template <>
-	struct is_integral<long> { static const bool value = true; };
-
-	template <>
-	struct is_integral<long long> { static const bool value = true; };
-
-	template <>
-	struct is_integral<unsigned char> { static const bool value = true; };
-
-	template <>
-	struct is_integral<unsigned int> { static const bool value = true; };
-
-	template <>
-	struct is_integral<unsigned long> { static const bool value = true; };
-
-	template <>
-	struct is_integral<unsigned long long> { static const bool value = true; };
-
 	// Use a boolean to typedef eiter type 1 or type 2.
 	template <bool isConst, typename isFalse, typename isTrue>
 	struct chooseConst {};
@@ -125,12 +92,6 @@ namespace ft
 	struct chooseConst<true, isFalse, isTrue>
 	{ typedef isTrue type; };
 
-	// Enable if.
-	template <bool B>
-	struct enable_if {};
-
-	template <>
-	struct enable_if<true> { typedef int type; };
 
 	// Map iterator.
 	
@@ -238,96 +199,105 @@ namespace ft
 	};
 
 	// Revers map iterator.
-	template<typename T,  bool B>
+	template<typename T>
 	class rev_map_iterator
 	{
 		public:
-			typedef ft::Node<T>															Node;
-			typedef T																	value_type;
+			typedef T																	iterator_type;
+			typedef typename ft::iterator_traits<T>::value_type							value_type;
 			typedef long int															difference_type;
 			typedef size_t																size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
-			typedef typename chooseConst<B, value_type&, const value_type&>::type		reference;
-			typedef typename chooseConst<B, value_type*, const value_type*>::type		pointer;
-			typedef Node*																nodePtr;
+			typedef typename ft::iterator_traits<T>::reference							reference;
+			typedef typename ft::iterator_traits<T>::pointer							pointer;
 		private:
-			nodePtr			m_node;
-			nodePtr			m_lastElem;
+			iterator_type m_base;
+			//nodePtr			m_node;
+			//nodePtr			m_lastElem;
 	
 		public:
 
 // __ Constructors & Destructor
 
 			// Default.
-			rev_map_iterator(nodePtr node = 0, nodePtr lastElem = 0) :
-				m_node(node), m_lastElem(lastElem) {}
+			rev_map_iterator(iterator_type it) : m_base(it) {}
+			rev_map_iterator() : m_base() {}
 
 			// Copy.
-			rev_map_iterator(const rev_map_iterator<T, false>& copy)
+			template<typename U>
+			rev_map_iterator(const rev_map_iterator<U>& copy) : m_base(copy.base())
 			{
-				m_node = copy.getNonConstNode();
-				m_lastElem = copy.getNonConstLastElem();
+				//m_node = copy.getNonConstNode();
+				//m_lastElem = copy.getNonConstLastElem();
 			}
 
 			// Convert.
-			explicit rev_map_iterator(map_iterator<T, true> copy)
-			{
-				//--copy;
-				m_node = copy.getNode();
-				m_lastElem = copy.getLastElem();
-			}
+			//explicit rev_map_iterator(map_iterator<T, true> copy)
+			//{
+			//	//--copy;
+			//	m_node = copy.getNode();
+			//	m_lastElem = copy.getLastElem();
+			//}
 
 			// Destroy.
 			~rev_map_iterator() {}
 
 			// Operator=.
-			rev_map_iterator& operator=(const rev_map_iterator& assign)
+			template<typename U>
+			rev_map_iterator& operator=(const rev_map_iterator<U>& assign)
 			{
 				if (this != &assign)
 				{
-					m_node = assign.m_node;
-					m_lastElem = assign.m_lastElem;
+					m_base = assign.m_base;
+				//	m_node = assign.m_node;
+				//	m_lastElem = assign.m_lastElem;
 				}
 				return (*this);
 			}
 
 // __ Getters
 
-			nodePtr getNonConstNode() const { return m_node; }
-			nodePtr getNonConstLastElem() const { return m_lastElem; }
+			//nodePtr getNonConstNode() const { return m_node; }
+			//nodePtr getNonConstLastElem() const { return m_lastElem; }
 
 // __ Operators
 
 			reference operator*() const 
 			{ 
+				iterator_type tmp(m_base);
+				--tmp;
 				//std::cout << "\nisNil: " << (m_node == m_lastElem ? "true" : "false") << "\n";
 			//	std::cout << "\nil->parent: " << (m_node->parent->content).first << "\n";
-				Node* tmp = Node::decrement(m_node, m_lastElem);
+			//	Node* tmp = Node::decrement(m_node, m_lastElem);
 			//	std::cout << "\nnode: " << tmp->content.first << "\n";
-				return (tmp->content); 
+				return (*tmp); 
 			}
 			pointer operator->() const 
 			{
-				Node* tmp = Node::decrement(m_node, m_lastElem);
-				return (&(tmp->content));
+				iterator_type tmp(m_base);
+				--tmp;
+				//Node* tmp = Node::decrement(m_node, m_lastElem);
+				return (tmp.operator->());
 			}
 
 			rev_map_iterator& operator++()
 			{
-				m_node = Node::decrement(m_node, m_lastElem);
+				--m_base;
+				//m_node = Node::decrement(m_node, m_lastElem);
 				return (*this);
 			}
 
 			rev_map_iterator operator++(int)
 			{
 				rev_map_iterator tmp(*this);
+				//rev_map_iterator tmp(*this);
 				++(*this);
 				return (tmp);
 			}
 
 			rev_map_iterator& operator--()
 			{
-				m_node = Node::increment(m_node, m_lastElem);
+				++m_base;
 				return (*this);
 			}
 
@@ -337,25 +307,17 @@ namespace ft
 				--(*this);
 				return (tmp);
 			}
-
-			bool operator==(const rev_map_iterator& it) const { return (it.m_node == m_node); }
-			bool operator!=(const rev_map_iterator& it) const { return (it.m_node != m_node); }
-
-		private:
-
-			Node* searchMaxNode(Node *root)
+			iterator_type base()
 			{
-				if (root && root != m_lastElem && root->right && root->right != m_lastElem)
-					return searchMaxNode(root->right);
-				return root;
+				return m_base;
+			}
+			iterator_type base() const
+			{
+				return m_base;
 			}
 
-			Node* searchMinNode(Node *root)
-			{
-				if (root && root != m_lastElem && root->left && root->left != m_lastElem)
-					return searchMinNode(root->left);
-				return root;
-			}
+			bool operator==(const rev_map_iterator& it) const { return (it.m_base == m_base); }
+			bool operator!=(const rev_map_iterator& it) const { return (it.m_base != m_base); }
 
 	};
 
@@ -376,34 +338,5 @@ namespace ft
 	{ return ft::pair<T1, T2>(a, b); }
 
 	// Lexicographical Compare.
-	template <typename InputIterator1, typename InputIterator2>
-	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
-	InputIterator2 first2, InputIterator2 last2)
-	{
-		while (first1 != last1)
-		{
-			if (first2 == last2 || *first2 < *first1)
-				return false;
-			else if (*first1 < *first2)
-				return true;
-			++first1;
-			++first2;
-		}
-		return (first2 != last2);
-	}
-
-	// Equal.
-	template <typename InputIterator1, typename InputIterator2>
-	bool equal (InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2)
-	{
-		while (begin1 != end1)
-		{
-			if (!(*begin1 == *begin2))
-					return (false);
-			++begin1;
-			++begin2;
-		}
-		return (true);
-	}
 }
 

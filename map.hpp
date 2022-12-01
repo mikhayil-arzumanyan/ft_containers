@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 17:21:01 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 19:30:47 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,8 @@ namespace ft
 
 			typedef typename ft::map_iterator<value_type, false>		iterator;
 			typedef typename ft::map_iterator<value_type, true>			const_iterator;
-			typedef typename ft::rev_map_iterator<value_type, false>	reverse_iterator;
-			typedef typename ft::rev_map_iterator<value_type, true>		const_reverse_iterator;
+			typedef typename ft::rev_map_iterator<iterator>				reverse_iterator;
+			typedef typename ft::rev_map_iterator<const_iterator>		const_reverse_iterator;
 		public:
 			// Member classes.
 			
@@ -296,39 +296,52 @@ namespace ft
 				Node* elemIsPresent = searchNode(m_root, val.first);
 				if (elemIsPresent && elemIsPresent != m_lastElem)
 					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem), false);
-				++m_size;
 				//m_lastElem->parent = m_root;
 				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem), true));
 			}
 
 			// Insert one element starting from a certain position.
-			iterator insert (iterator position, const value_type& val)
+			iterator insert (iterator pos, const value_type& val)
 			{
-				if (m_comp(val.first, position->first))
+				Node* head = pos.getNode();
+				while (!isSentinel(head))
 				{
-					iterator prev(position);
-					--prev;
-					while (prev != end() && prev->first >= val.first)
-					{
-						--position;
-						--prev;
-					}
+					value_type value = head->parent->content;
+					if (!isSentinel(head) &&
+						head->parent->left == head &&
+						value_comp()(val, value))
+						break ;
+					if (!isSentinel(head) &&
+						head->parent->right == head &&
+						value_comp()(value, val))
+						break ;
+					head = head->parent;
 				}
-				else if (m_comp(position->first, val.first))
-				{
-					iterator next(position);
-					++next;
-					while (next != end() && next->first <= val.first)
-					{
-						++position;
-						++next;
-					}
-				}
-				if (position != end() && val.first == position->first)
-					return position;
-				++m_size;
+				if (isSentinel(head))
+					head = m_root;
+			//	if (m_comp(val.first, position->first))
+			//	{
+			//		iterator prev(position);
+			//		--prev;
+			//		while (prev != end() && prev->first >= val.first)
+			//		{
+			//			--position;
+			//			--prev;
+			//		}
+			//	}
+			//	else if (m_comp(position->first, val.first))
+			//	{
+			//		iterator next(position);
+			//		++next;
+			//		while (next != end() && next->first <= val.first)
+			//		{
+			//			++position;
+			//			++next;
+			//		}
+			//	}
+			//	if (position != end() && val.first == position->first)
 				//m_lastElem->parent = m_root;
-				return iterator(insertNode(position.getNode(), val), m_lastElem);
+				return iterator(insertNode(head, val), m_lastElem);
 			}
 
 			// Inserts all elements.
@@ -344,17 +357,14 @@ namespace ft
 			void erase (iterator position)
 			{
 				deleteNode(position.getNode(), position->first);
-				--m_size;
 				//m_lastElem->parent = m_root;
 			}
 
 			// Removes one element on a specific key.
 			size_type erase (const Key& k)
 			{
-				size_type ret = deleteNode(m_root, k);
-				m_size -= ret;
+				return deleteNode(m_root, k);
 				//m_lastElem->parent = m_root;
-				return ret;
 			}
 
 			// Removes a range of elements.
@@ -432,7 +442,7 @@ namespace ft
 			{
 				const_iterator it = begin();
 				for (; it != end(); ++it)
-					if (!m__comp(it->first, k))
+					if (!m_comp(it->first, k))
 						break;
 				return it;
 			}
@@ -460,33 +470,33 @@ namespace ft
 			// Returns the bounds of a range.
 			pair<iterator, iterator> equal_range(const Key& k)
 			{
-				iterator it = upper_bound(k);
-				if (it != begin())
-				{
-					--it;
-					if (m_comp(it->first, k) || m_comp(k, it->first))
-						++it;
-				}
-				iterator next(it);
-				if (it != end())
-					++next;
-				return ft::make_pair<iterator, iterator>(it, next);
+				//iterator it = upper_bound(k);
+				//if (it != begin())
+				//{
+				//	--it;
+				//	if (m_comp(it->first, k) || m_comp(k, it->first))
+				//		++it;
+				//}
+				//iterator next(it);
+				//if (it != end())
+				//	++next;
+				return ft::make_pair(lower_bound(k), upper_bound(k));
 			}
 
 			// Returns the bounds of a range.
 			pair<const_iterator, const_iterator> equal_range(const Key& k) const
 			{
-				const_iterator it = upper_bound(k);
-				if (it != begin())
-				{
-					--it;
-					if (m_comp(it->forst, k) || m_comp(k, it->first))
-						++it;
-				}
-				const_iterator next(it);
-				if (it != end())
-					++next;
-				return ft::make_pair<const_iterator, const_iterator>(it, next);
+				//const_iterator it = upper_bound(k);
+				//if (it != begin())
+				//{
+				//	--it;
+				//	if (m_comp(it->first, k) || m_comp(k, it->first))
+				//		++it;
+				//}
+				//const_iterator next(it);
+				//if (it != end())
+				//	++next;
+				return ft::make_pair(lower_bound(k), upper_bound(k));
 			}
 
 		private:
@@ -561,6 +571,7 @@ namespace ft
 					m_root->right = m_lastElem;
 					m_root->parent = m_lastElem;
 					m_lastElem->parent = m_root;
+					++m_size;
 					return m_root;
 				}
 				if (insertPos->content.first == pair.first)
@@ -587,9 +598,10 @@ namespace ft
 					insertPos->right = newNode;
 				}
 				newNode->parent = insertPos;
-				balanceTheTree(&m_root, newNode);
+				balanceTheTree(newNode);
 				m_lastElem->parent = m_root;
 				m_root->parent = m_lastElem;
+				++m_size;
 			//	std::cout << "\nroot: " << (m_root->content).first << "\n";
 			//	std::cout << "\nroot->left: ";
 			//	if (m_root->left == m_lastElem)
@@ -660,6 +672,7 @@ namespace ft
 					return false;
 				treeDelete(del);
 				balanceNode = del->parent;
+				--m_size;
 			//	if (!del->parent || del->parent == m_lastElem)
 			//	{
 			//		if (del->left == m_lastElem && del->right == m_lastElem)
@@ -736,7 +749,7 @@ namespace ft
 			//		m_allocPair.construct(&del->content, maxNode->content);
 			//		return deleteNode(del->left, maxNode->content.first);
 			//	}
-				balanceTheTree(&m_root, balanceNode);
+				balanceTheTree(balanceNode);
 				//deallocateNode(del);
 				return true;
 			}
@@ -752,7 +765,7 @@ namespace ft
 			// RIGHT ROTATION
 			// Does a right rotation between a node and his left child. The left child will go up and take 
 			// the position of this node, and this node will become the right child of the node going up.
-			void rotateRight(Node** root, Node* x)
+			void rotateRight(Node* x)
 			{
 				Node* y = x->left;
 				x->left = y->right;
@@ -773,7 +786,7 @@ namespace ft
 			// LEFT ROTATION
 			// Does a left rotation between a node and his right child. The right child will go up and take
 			// the position of this node; and this node will become the left child of the node going up.
-			void rotateLeft(Node** root, Node* x)
+			void rotateLeft( Node* x)
 			{
 				Node* y = x->right;
 				x->right = y->left;
@@ -794,24 +807,24 @@ namespace ft
 			// Starts from a node in the AVL tree, and will check for this node and all the parent's node
             //  until root if their balance (height of left and right subtree) is correct. If not, a rotation
             //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
-			void balanceTheTree(Node** root, Node* node)
+			void balanceTheTree(Node* node)
 			{
 				while (!isSentinel(node))
 				{
 					int balance = balanceOfSubtrees(node);
 					if (balance < -1 && balanceOfSubtrees(node->right) < 0)
-						rotateLeft(root, node);
+						rotateLeft(node);
 					else if (balance < -1 && balanceOfSubtrees(node->right) >= 0)
 					{
-						rotateRight(root, node->right);
-						rotateLeft(root, node);
+						rotateRight(node->right);
+						rotateLeft(node);
 					}
 					else if (balance > 1 && balanceOfSubtrees(node->left) > 0)
-						rotateRight(root, node);
+						rotateRight(node);
 					else if (balance > 1 && balanceOfSubtrees(node->left) <= 0)
 					{
-						rotateLeft(root, node->left);
-						rotateRight(root, node);
+						rotateLeft(node->left);
+						rotateRight(node);
 					}
 					node = node->parent;
 				}
