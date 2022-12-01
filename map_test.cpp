@@ -661,6 +661,7 @@ static void	example10()
 	ft_A.insert(ft::make_pair('y', 2002));
 	ft_A.insert(ft::make_pair('z', 3003));
 	ft::pair<char, int> ft_highest = *(ft_A.rbegin());
+	//std::cout << "\n key: " << ft_highest.first << "\n";
 	ft::map<char, int>::iterator	ft_it = ft_A.begin();
 	std::cout << "ft::map  ->";
 	do
@@ -1593,7 +1594,7 @@ void	map_test()
 	example17();
 	example18();
 	example19();
-//	example20();
+	example20();
 	example21();
 	example22();
 }

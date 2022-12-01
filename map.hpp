@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/30 20:29:24 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 17:21:01 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,7 @@
 
 namespace ft
 {
-	//   key     		Type of keys.
-	//   T       	 	Type of elements.
-	//   Compare  		Comparison object used to sort the binary tree.
-	//   Allocator		Object used to manage the vector' storage.
+	// Node
 	template<typename T>
 	struct Node
 	{
@@ -95,6 +92,11 @@ namespace ft
 			return node;
 		}
 	};
+
+	//   key     		Type of keys.
+	//   T       	 	Type of elements.
+	//   Compare  		Comparison object used to sort the binary tree.
+	//   Allocator		Object used to manage the vector' storage.
 	template<
 		typename Key,
 		typename T,
@@ -189,9 +191,10 @@ namespace ft
 			m_size(0), m_allocPair(alloc), m_comp(comp)
 			{
 				m_lastElem = createNode(ft::pair<const Key, T>());
-				m_root = m_lastElem;
 				m_lastElem->left = m_lastElem;
 				m_lastElem->right = m_lastElem;
+				m_lastElem->parent = m_root;
+				m_root = m_lastElem;
 				for (; first != last; ++first)
 					insert(*first);
 			}
@@ -201,9 +204,10 @@ namespace ft
 			m_size(0), m_allocPair(other.m_allocPair), m_comp(other.m_comp), m_allocNode(other.m_allocNode)
 			{
 				m_lastElem = createNode(ft::pair<const Key, T>());
-				m_root = m_lastElem;
 				m_lastElem->left = m_lastElem;
 				m_lastElem->right = m_lastElem;
+				m_lastElem->parent = m_root;
+				m_root = m_lastElem;
 				for (const_iterator it = other.begin(); it != other.end(); ++it)
 					insert(*it);
 			}
@@ -233,10 +237,10 @@ namespace ft
 			const_iterator begin() const			{ return const_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
 			iterator end()							{ return iterator(m_lastElem, m_lastElem); }
 			const_iterator end() const				{ return const_iterator(m_lastElem, m_lastElem); }
-			reverse_iterator rbegin()				{ return reverse_iterator(Node::searchMaxNode(m_root, m_lastElem), m_lastElem); }
-			const_reverse_iterator rbegin() const	{ return const_reverse_iterator(Node::searchMaxNode(m_root, m_lastElem), m_lastElem); } 
-			reverse_iterator rend()					{ return reverse_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
-			const_reverse_iterator rend() const		{ return const_reverse_iterator(Node::searchMinNode(m_root, m_lastElem), m_lastElem); }
+			reverse_iterator rbegin()				{ return reverse_iterator( end() ); }
+			const_reverse_iterator rbegin() const	{ return const_reverse_iterator( end() ); } 
+			reverse_iterator rend()					{ return reverse_iterator( begin() ); }
+			const_reverse_iterator rend() const		{ return const_reverse_iterator( begin() ); }
 
 // __ Capacity
 
@@ -293,14 +297,14 @@ namespace ft
 				if (elemIsPresent && elemIsPresent != m_lastElem)
 					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem), false);
 				++m_size;
-				m_lastElem->parent = m_root;
+				//m_lastElem->parent = m_root;
 				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem), true));
 			}
 
 			// Insert one element starting from a certain position.
 			iterator insert (iterator position, const value_type& val)
 			{
-				if (position->first > val.first)
+				if (m_comp(val.first, position->first))
 				{
 					iterator prev(position);
 					--prev;
@@ -310,7 +314,7 @@ namespace ft
 						--prev;
 					}
 				}
-				else if (position->first < val.first)
+				else if (m_comp(position->first, val.first))
 				{
 					iterator next(position);
 					++next;
@@ -323,7 +327,7 @@ namespace ft
 				if (position != end() && val.first == position->first)
 					return position;
 				++m_size;
-				m_lastElem->parent = m_root;
+				//m_lastElem->parent = m_root;
 				return iterator(insertNode(position.getNode(), val), m_lastElem);
 			}
 
@@ -341,7 +345,7 @@ namespace ft
 			{
 				deleteNode(position.getNode(), position->first);
 				--m_size;
-				m_lastElem->parent = m_root;
+				//m_lastElem->parent = m_root;
 			}
 
 			// Removes one element on a specific key.
@@ -349,7 +353,7 @@ namespace ft
 			{
 				size_type ret = deleteNode(m_root, k);
 				m_size -= ret;
-				m_lastElem->parent = m_root;
+				//m_lastElem->parent = m_root;
 				return ret;
 			}
 
@@ -556,26 +560,27 @@ namespace ft
 					m_root->left = m_lastElem;
 					m_root->right = m_lastElem;
 					m_root->parent = m_lastElem;
+					m_lastElem->parent = m_root;
 					return m_root;
 				}
 				if (insertPos->content.first == pair.first)
 					return 0;
-				if (insertPos->content.first > pair.first && insertPos->left && insertPos->left != m_lastElem)
+				if (m_comp(pair.first, insertPos->content.first) && insertPos->left && insertPos->left != m_lastElem)
 					return insertNode(insertPos->left, pair);
-				else if (insertPos->content.first < pair.first && insertPos->right && insertPos->right != m_lastElem)
+				else if (m_comp(insertPos->content.first, pair.first) && insertPos->right && insertPos->right != m_lastElem)
 					return insertNode(insertPos->right, pair);
 				Node *newNode = createNode(pair);
-				if (insertPos->content.first > newNode->content.first && (!insertPos->left || insertPos->left == m_lastElem))
+				if (m_comp(newNode->content.first, insertPos->content.first) && (!insertPos->left || insertPos->left == m_lastElem))
 					insertPos->left = newNode;
-				else if (insertPos->content.first < newNode->content.first && (!insertPos->right || insertPos->right == m_lastElem))
+				else if (m_comp(insertPos->content.first, newNode->content.first) && (!insertPos->right || insertPos->right == m_lastElem))
 					insertPos->right = newNode;
-				else if (insertPos->left && insertPos->left != m_lastElem && insertPos->content.first > newNode->content.first)
+				else if (insertPos->left && insertPos->left != m_lastElem && m_comp(newNode->content.first, insertPos->content.first))
 				{
 					newNode->left = m_lastElem;
 					m_lastElem->right = newNode;
 					insertPos->left = newNode;
 				}
-				else if (insertPos->right && insertPos->right != m_lastElem && insertPos->content.first < newNode->content.first)
+				else if (insertPos->right && insertPos->right != m_lastElem && m_comp(insertPos->content.first, newNode->content.first))
 				{
 					newNode->right = m_lastElem;
 					m_lastElem->left = newNode;
@@ -583,11 +588,33 @@ namespace ft
 				}
 				newNode->parent = insertPos;
 				balanceTheTree(&m_root, newNode);
+				m_lastElem->parent = m_root;
 				m_root->parent = m_lastElem;
+			//	std::cout << "\nroot: " << (m_root->content).first << "\n";
+			//	std::cout << "\nroot->left: ";
+			//	if (m_root->left == m_lastElem)
+			//		std::cout << "nil\n";
+			//	else
+			//		std::cout << (m_root->left->content).first << "\n";
+			//	std::cout << "\nroot->parent: ";
+			//	if (m_root->parent == m_lastElem)
+			//		std::cout << "nil\n";
+			//	else
+			//		std::cout << (m_root->parent->content).first << "\n";
+			//	std::cout << "\nroot->right: ";
+			//	if (m_root->right == m_lastElem)
+			//		std::cout << "nil\n";
+			//	else
+			//		std::cout << (m_root->right->content).first << "\n";
+			//	std::cout << "\nroot->right->right: ";
+			//	if (m_root->right == m_lastElem || m_root->right->right == m_lastElem)
+			//		std::cout << "nil\n";
+			//	else
+			//		std::cout << (m_root->right->right->content).first << "\n";
 				return newNode;
 			}
 
-			//
+			// Transplant change 2 node each other
 			void transplant(Node* node_1, Node* node_2)
 			{
 				if (isSentinel(node_1->parent))
@@ -600,7 +627,7 @@ namespace ft
 					node_2->parent = node_1->parent;
 			}
 
-			//
+			// Delete node
 			void treeDelete(Node* del)
 			{
 				if (isSentinel(del->left))
@@ -725,41 +752,43 @@ namespace ft
 			// RIGHT ROTATION
 			// Does a right rotation between a node and his left child. The left child will go up and take 
 			// the position of this node, and this node will become the right child of the node going up.
-			void rotateRight(Node** root, Node* nodeGoingDown)
+			void rotateRight(Node** root, Node* x)
 			{
-				Node* nodeGoingUp = nodeGoingDown->left;
-				nodeGoingDown->left = nodeGoingUp->right;
-				if (nodeGoingUp->right)
-					nodeGoingUp->right->parent = nodeGoingDown;
-				nodeGoingUp->right = nodeGoingDown;
-				nodeGoingUp->parent = nodeGoingDown->parent;
-				if (nodeGoingDown->parent && nodeGoingDown->parent->left == nodeGoingDown)
-					nodeGoingDown->parent->left = nodeGoingUp;
-				else if (nodeGoingDown->parent)
-					nodeGoingDown->parent->right = nodeGoingUp;
-				nodeGoingDown->parent = nodeGoingUp;
-				if (!nodeGoingUp->parent)
-					*root = nodeGoingUp;
+				Node* y = x->left;
+				x->left = y->right;
+				if (!isSentinel(y->right))
+					y->right->parent = x;
+				//y->left = x;
+				y->parent = x->parent;
+				if (isSentinel(x->parent))
+					m_root = y;
+				else if (x == x->parent->right)
+					x->parent->right = y;
+				else
+					x->parent->left = y;
+				y->right = x;
+				x->parent = y;
 			}
 
 			// LEFT ROTATION
 			// Does a left rotation between a node and his right child. The right child will go up and take
 			// the position of this node; and this node will become the left child of the node going up.
-			void rotateLeft(Node** root, Node* nodeGoingDown)
+			void rotateLeft(Node** root, Node* x)
 			{
-				Node* nodeGoingUp = nodeGoingDown->right;
-				nodeGoingDown->right = nodeGoingUp->left;
-				if (nodeGoingUp->left)
-					nodeGoingUp->left->parent = nodeGoingDown;
-				nodeGoingUp->left = nodeGoingDown;
-				nodeGoingUp->parent = nodeGoingDown->parent;
-				if (nodeGoingDown->parent && nodeGoingDown->parent->left == nodeGoingDown)
-					nodeGoingDown->parent->left = nodeGoingUp;
-				else if (nodeGoingDown->parent)
-					nodeGoingDown->parent->right = nodeGoingUp;
-				nodeGoingDown->parent = nodeGoingUp;
-				if (!nodeGoingUp->parent)
-					*root = nodeGoingUp;
+				Node* y = x->right;
+				x->right = y->left;
+				if (!isSentinel(y->left))
+					y->left->parent = x;
+				//y->left = x;
+				y->parent = x->parent;
+				if (isSentinel(x->parent))
+					m_root = y;
+				else if (x == x->parent->left)
+					x->parent->left = y;
+				else
+					x->parent->right = y;
+				y->left = x;
+				x->parent = y;
 			}
 
 			// Starts from a node in the AVL tree, and will check for this node and all the parent's node

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/11/30 20:29:27 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 17:21:41 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,8 +143,7 @@ namespace ft
 	class map_iterator
 	{
 		public:
-			typedef ft:: Node<T>														Node;
-			
+			typedef ft::Node<T>															Node;
 			typedef T																	value_type;
 			typedef long int															difference_type;
 			typedef size_t																size_type;
@@ -242,12 +241,11 @@ namespace ft
 	template<typename T,  bool B>
 	class rev_map_iterator
 	{
-
-		typedef ft::Node<T>												Node;
 		public:
-			typedef T													value_type;
-			typedef long int											difference_type;
-			typedef size_t												size_type;
+			typedef ft::Node<T>															Node;
+			typedef T																	value_type;
+			typedef long int															difference_type;
+			typedef size_t																size_type;
 			typedef std::bidirectional_iterator_tag										iterator_category;
 			typedef typename chooseConst<B, value_type&, const value_type&>::type		reference;
 			typedef typename chooseConst<B, value_type*, const value_type*>::type		pointer;
@@ -257,6 +255,7 @@ namespace ft
 			nodePtr			m_lastElem;
 	
 		public:
+
 // __ Constructors & Destructor
 
 			// Default.
@@ -271,11 +270,11 @@ namespace ft
 			}
 
 			// Convert.
-			explicit rev_map_iterator(map_iterator<T, false>& copy)
+			explicit rev_map_iterator(map_iterator<T, true> copy)
 			{
-				--copy;
-				m_node = copy.getNonConstNode();
-				m_lastElem = copy.getNonConstLastElem();
+				//--copy;
+				m_node = copy.getNode();
+				m_lastElem = copy.getLastElem();
 			}
 
 			// Destroy.
@@ -299,8 +298,19 @@ namespace ft
 
 // __ Operators
 
-			reference operator*() const { return (m_node->content); }
-			pointer operator->() const { return (&m_node->content); }
+			reference operator*() const 
+			{ 
+				//std::cout << "\nisNil: " << (m_node == m_lastElem ? "true" : "false") << "\n";
+			//	std::cout << "\nil->parent: " << (m_node->parent->content).first << "\n";
+				Node* tmp = Node::decrement(m_node, m_lastElem);
+			//	std::cout << "\nnode: " << tmp->content.first << "\n";
+				return (tmp->content); 
+			}
+			pointer operator->() const 
+			{
+				Node* tmp = Node::decrement(m_node, m_lastElem);
+				return (&(tmp->content));
+			}
 
 			rev_map_iterator& operator++()
 			{
