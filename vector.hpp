@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 13:29:09 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 17:50:45 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 21:32:47 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,10 +221,19 @@ namespace ft
 
 // __ Modifiers
 
+			// Swap.
+			template <typename U>
+			void swap(U& a, U& b)
+			{
+				U tmp = a;
+				a = b;
+				b = tmp;
+			}
+
 			// Insert singl element.
 			iterator insert(iterator pos, const T &value)
 			{
-				size_type	start;
+			size_type	start;
 
 				start = pos - this->begin();
 				this->insert(pos, 1, value);
@@ -465,10 +474,10 @@ namespace ft
 			// Swap.
 			void swap(vector &x)
 			{
-				std::swap(this->m_data, x.m_data);
-				std::swap(this->m_size, x.m_size);
-				std::swap(this->m_capacity, x.m_capacity);
-				std::swap(this->m_alloc, x.m_alloc);
+				swap(this->m_data, x.m_data);
+				swap(this->m_size, x.m_size);
+				swap(this->m_capacity, x.m_capacity);
+				swap(this->m_alloc, x.m_alloc);
 			}
 
 // __ Element Access
@@ -515,6 +524,7 @@ namespace ft
 			reverse_iterator rend() { return reverse_iterator(begin()); }
 			const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
 			const_reverse_iterator rend() const { return const_reverse_iterator(end()); }
+
 	};
 
 // __ Operators

@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 19:30:47 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 21:32:45 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,22 +128,6 @@ namespace ft
 			typedef typename ft::rev_map_iterator<const_iterator>		const_reverse_iterator;
 		public:
 			// Member classes.
-			
-			/*
-			class value_compare : std::binary_function<value_type, value_type, bool>
-			{
-				public:
-					value_compare(key_compare c) : comp(c) {}
-					bool operator()(const value_type &lhs, const value_type &rhs) const
-					{
-						return (this->comp(lhs.first, rhs.first));
-					}
-				protected:
-					key_compare comp;
-				private:
-					friend class map<key_type, value_type, key_compare, allocator_type>;
-			};
-			*/
 
 			class value_compare
 			{
@@ -303,6 +287,9 @@ namespace ft
 			// Insert one element starting from a certain position.
 			iterator insert (iterator pos, const value_type& val)
 			{
+				Node* node = searchNode(m_root, val.first);
+				if (!isSentinel(node))
+					return iterator(node, m_lastElem);
 				Node* head = pos.getNode();
 				while (!isSentinel(head))
 				{
@@ -356,14 +343,14 @@ namespace ft
 			// Removes one element.
 			void erase (iterator position)
 			{
-				deleteNode(position.getNode(), position->first);
+				deleteNode(position->first);
 				//m_lastElem->parent = m_root;
 			}
 
 			// Removes one element on a specific key.
 			size_type erase (const Key& k)
 			{
-				return deleteNode(m_root, k);
+				return deleteNode(k);
 				//m_lastElem->parent = m_root;
 			}
 
@@ -562,7 +549,7 @@ namespace ft
 			// Inserts a pair in the tree or a specific subtree by adding a new element, and 
             // then equilibrates the AVL tree if necessary. If element is already present, 
             // does nothing and return NULL.
-			Node* insertNode(Node* insertPos, const value_type& pair)
+			Node* insertNode(Node*& root, const value_type& pair)
 			{
 				if (m_root == m_lastElem)
 				{
@@ -574,34 +561,55 @@ namespace ft
 					++m_size;
 					return m_root;
 				}
-				if (insertPos->content.first == pair.first)
-					return 0;
-				if (m_comp(pair.first, insertPos->content.first) && insertPos->left && insertPos->left != m_lastElem)
-					return insertNode(insertPos->left, pair);
-				else if (m_comp(insertPos->content.first, pair.first) && insertPos->right && insertPos->right != m_lastElem)
-					return insertNode(insertPos->right, pair);
-				Node *newNode = createNode(pair);
-				if (m_comp(newNode->content.first, insertPos->content.first) && (!insertPos->left || insertPos->left == m_lastElem))
-					insertPos->left = newNode;
-				else if (m_comp(insertPos->content.first, newNode->content.first) && (!insertPos->right || insertPos->right == m_lastElem))
-					insertPos->right = newNode;
-				else if (insertPos->left && insertPos->left != m_lastElem && m_comp(newNode->content.first, insertPos->content.first))
+				Node* y = m_lastElem;
+				Node* x = root;
+				while (!isSentinel(x))
 				{
-					newNode->left = m_lastElem;
-					m_lastElem->right = newNode;
-					insertPos->left = newNode;
+					y = x;
+					if (m_comp(pair.first, x->content.first))
+						x = x->left;
+					else
+						x = x->right;
 				}
-				else if (insertPos->right && insertPos->right != m_lastElem && m_comp(insertPos->content.first, newNode->content.first))
-				{
-					newNode->right = m_lastElem;
-					m_lastElem->left = newNode;
-					insertPos->right = newNode;
-				}
-				newNode->parent = insertPos;
-				balanceTheTree(newNode);
-				m_lastElem->parent = m_root;
-				m_root->parent = m_lastElem;
+				Node* z = createNode(pair);
+				z->parent = y;
+				if (isSentinel(y))
+					root = z;
+				else if (m_comp(pair.first, y->content.first))
+					y->left = z;
+				else
+					y->right = z;
+				balanceTheTree(z);
 				++m_size;
+				m_lastElem->parent = m_root;
+				//if (insertPos->content.first == pair.first)
+				//	return 0;
+				//if (m_comp(pair.first, insertPos->content.first) && insertPos->left && insertPos->left != m_lastElem)
+				//	return insertNode(insertPos->left, pair);
+				//else if (m_comp(insertPos->content.first, pair.first) && insertPos->right && insertPos->right != m_lastElem)
+				//	return insertNode(insertPos->right, pair);
+				//Node *newNode = createNode(pair);
+				//if (m_comp(newNode->content.first, insertPos->content.first) && (!insertPos->left || insertPos->left == m_lastElem))
+				//	insertPos->left = newNode;
+				//else if (m_comp(insertPos->content.first, newNode->content.first) && (!insertPos->right || insertPos->right == m_lastElem))
+				//	insertPos->right = newNode;
+				//else if (insertPos->left && insertPos->left != m_lastElem && m_comp(newNode->content.first, insertPos->content.first))
+				//{
+				//	newNode->left = m_lastElem;
+				//	m_lastElem->right = newNode;
+				//	insertPos->left = newNode;
+				//}
+				//else if (insertPos->right && insertPos->right != m_lastElem && m_comp(insertPos->content.first, newNode->content.first))
+				//{
+				//	newNode->right = m_lastElem;
+				//	m_lastElem->left = newNode;
+				//	insertPos->right = newNode;
+				//}
+				//newNode->parent = insertPos;
+				//balanceTheTree(newNode);
+				//m_lastElem->parent = m_root;
+				//m_root->parent = m_lastElem;
+				//++m_size;
 			//	std::cout << "\nroot: " << (m_root->content).first << "\n";
 			//	std::cout << "\nroot->left: ";
 			//	if (m_root->left == m_lastElem)
@@ -623,7 +631,7 @@ namespace ft
 			//		std::cout << "nil\n";
 			//	else
 			//		std::cout << (m_root->right->right->content).first << "\n";
-				return newNode;
+				return z;
 			}
 
 			// Transplant change 2 node each other
@@ -640,38 +648,47 @@ namespace ft
 			}
 
 			// Delete node
-			void treeDelete(Node* del)
+			Node* treeDelete(Node* del)
 			{
+				Node* node = m_lastElem;
 				if (isSentinel(del->left))
+				{
+					node = del->right;
 					transplant(del, del->right);
+				}
 				else if (isSentinel(del->right))
+				{
+					node = del->left;
 					transplant(del, del->left);
+				}
 				else
 				{
 					Node* minNode = Node::searchMinNode(del->right, m_lastElem);
+					node = minNode->right;
 					if (minNode->parent != del)
 					{
 						transplant(minNode, minNode->right);
 						minNode->right = del->right;
 						minNode->right->parent = minNode;
+
 					}
 					transplant(del, minNode);
 					minNode->left = del->left;
 					minNode->left->parent = minNode;
 				}
+				return node;
 			}
 
 
 			// Deletes the node that matches key from the tree or a specific subtree, and then equilibrates the 
             // AVL tree if necessary. If element is missing, this function does nothing.
-			bool deleteNode(Node* deletePos, Key k)
+			bool deleteNode(Key k)
 			{
 				Node* balanceNode = 0;
-				Node* del = searchNode(deletePos, k);
+				Node* del = searchNode(m_root, k);
 				if (!del || del == m_lastElem)
 					return false;
-				treeDelete(del);
-				balanceNode = del->parent;
+				balanceNode = treeDelete(del);
 				--m_size;
 			//	if (!del->parent || del->parent == m_lastElem)
 			//	{
