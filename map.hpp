@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 12:17:38 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 21:32:45 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 21:44:22 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ namespace ft
 			typedef ft::Node<ft::pair<const Key, T> >	Node;
 
 		public:
+
 			// Member Type.
 			typedef Key									key_type;
 			typedef Compare								key_compare;
@@ -127,8 +128,8 @@ namespace ft
 			typedef typename ft::rev_map_iterator<iterator>				reverse_iterator;
 			typedef typename ft::rev_map_iterator<const_iterator>		const_reverse_iterator;
 		public:
-			// Member classes.
 
+			// Member classes.
 			class value_compare
 			{
 				friend class map;
@@ -146,6 +147,7 @@ namespace ft
 			};
 
 		private:
+
 			// Attributes.
 			Node*					m_root;
 			Node*					m_lastElem;
@@ -157,6 +159,7 @@ namespace ft
 // __ Constructors and Destructor
 
 		public:
+
 			// Default.
 			explicit map(const Compare& comp = Compare(),
 			const Allocator& alloc = Allocator()) : m_size(0), m_allocPair(alloc), m_comp(comp)
@@ -280,7 +283,6 @@ namespace ft
 				Node* elemIsPresent = searchNode(m_root, val.first);
 				if (elemIsPresent && elemIsPresent != m_lastElem)
 					return ft::pair<iterator, bool>(iterator(elemIsPresent, m_lastElem), false);
-				//m_lastElem->parent = m_root;
 				return (ft::pair<iterator, bool>(iterator(insertNode(m_root, val), m_lastElem), true));
 			}
 
@@ -306,28 +308,6 @@ namespace ft
 				}
 				if (isSentinel(head))
 					head = m_root;
-			//	if (m_comp(val.first, position->first))
-			//	{
-			//		iterator prev(position);
-			//		--prev;
-			//		while (prev != end() && prev->first >= val.first)
-			//		{
-			//			--position;
-			//			--prev;
-			//		}
-			//	}
-			//	else if (m_comp(position->first, val.first))
-			//	{
-			//		iterator next(position);
-			//		++next;
-			//		while (next != end() && next->first <= val.first)
-			//		{
-			//			++position;
-			//			++next;
-			//		}
-			//	}
-			//	if (position != end() && val.first == position->first)
-				//m_lastElem->parent = m_root;
 				return iterator(insertNode(head, val), m_lastElem);
 			}
 
@@ -344,14 +324,12 @@ namespace ft
 			void erase (iterator position)
 			{
 				deleteNode(position->first);
-				//m_lastElem->parent = m_root;
 			}
 
 			// Removes one element on a specific key.
 			size_type erase (const Key& k)
 			{
 				return deleteNode(k);
-				//m_lastElem->parent = m_root;
 			}
 
 			// Removes a range of elements.
@@ -457,32 +435,12 @@ namespace ft
 			// Returns the bounds of a range.
 			pair<iterator, iterator> equal_range(const Key& k)
 			{
-				//iterator it = upper_bound(k);
-				//if (it != begin())
-				//{
-				//	--it;
-				//	if (m_comp(it->first, k) || m_comp(k, it->first))
-				//		++it;
-				//}
-				//iterator next(it);
-				//if (it != end())
-				//	++next;
 				return ft::make_pair(lower_bound(k), upper_bound(k));
 			}
 
 			// Returns the bounds of a range.
 			pair<const_iterator, const_iterator> equal_range(const Key& k) const
 			{
-				//const_iterator it = upper_bound(k);
-				//if (it != begin())
-				//{
-				//	--it;
-				//	if (m_comp(it->first, k) || m_comp(k, it->first))
-				//		++it;
-				//}
-				//const_iterator next(it);
-				//if (it != end())
-				//	++next;
 				return ft::make_pair(lower_bound(k), upper_bound(k));
 			}
 
@@ -499,11 +457,13 @@ namespace ft
 
 // __ AVL Binary Search Tree
 
-			// Creates a new node and assign pair.
+			// To check
 			bool isSentinel(Node* node)
 			{
 				return node == 0 || node == m_lastElem;
 			}
+
+			// Creates a new node and assign pair.
 			Node* createNode(const value_type& pair)
 			{
 				Node* newNode = m_allocNode.allocate(1);
@@ -582,55 +542,6 @@ namespace ft
 				balanceTheTree(z);
 				++m_size;
 				m_lastElem->parent = m_root;
-				//if (insertPos->content.first == pair.first)
-				//	return 0;
-				//if (m_comp(pair.first, insertPos->content.first) && insertPos->left && insertPos->left != m_lastElem)
-				//	return insertNode(insertPos->left, pair);
-				//else if (m_comp(insertPos->content.first, pair.first) && insertPos->right && insertPos->right != m_lastElem)
-				//	return insertNode(insertPos->right, pair);
-				//Node *newNode = createNode(pair);
-				//if (m_comp(newNode->content.first, insertPos->content.first) && (!insertPos->left || insertPos->left == m_lastElem))
-				//	insertPos->left = newNode;
-				//else if (m_comp(insertPos->content.first, newNode->content.first) && (!insertPos->right || insertPos->right == m_lastElem))
-				//	insertPos->right = newNode;
-				//else if (insertPos->left && insertPos->left != m_lastElem && m_comp(newNode->content.first, insertPos->content.first))
-				//{
-				//	newNode->left = m_lastElem;
-				//	m_lastElem->right = newNode;
-				//	insertPos->left = newNode;
-				//}
-				//else if (insertPos->right && insertPos->right != m_lastElem && m_comp(insertPos->content.first, newNode->content.first))
-				//{
-				//	newNode->right = m_lastElem;
-				//	m_lastElem->left = newNode;
-				//	insertPos->right = newNode;
-				//}
-				//newNode->parent = insertPos;
-				//balanceTheTree(newNode);
-				//m_lastElem->parent = m_root;
-				//m_root->parent = m_lastElem;
-				//++m_size;
-			//	std::cout << "\nroot: " << (m_root->content).first << "\n";
-			//	std::cout << "\nroot->left: ";
-			//	if (m_root->left == m_lastElem)
-			//		std::cout << "nil\n";
-			//	else
-			//		std::cout << (m_root->left->content).first << "\n";
-			//	std::cout << "\nroot->parent: ";
-			//	if (m_root->parent == m_lastElem)
-			//		std::cout << "nil\n";
-			//	else
-			//		std::cout << (m_root->parent->content).first << "\n";
-			//	std::cout << "\nroot->right: ";
-			//	if (m_root->right == m_lastElem)
-			//		std::cout << "nil\n";
-			//	else
-			//		std::cout << (m_root->right->content).first << "\n";
-			//	std::cout << "\nroot->right->right: ";
-			//	if (m_root->right == m_lastElem || m_root->right->right == m_lastElem)
-			//		std::cout << "nil\n";
-			//	else
-			//		std::cout << (m_root->right->right->content).first << "\n";
 				return z;
 			}
 
@@ -690,84 +601,7 @@ namespace ft
 					return false;
 				balanceNode = treeDelete(del);
 				--m_size;
-			//	if (!del->parent || del->parent == m_lastElem)
-			//	{
-			//		if (del->left == m_lastElem && del->right == m_lastElem)
-			//		{
-			//			m_root = m_lastElem;
-			//			m_lastElem->left = m_lastElem;
-			//			m_lastElem->right = m_lastElem;
-			//		}
-			//		else if (del->left && del->left != m_lastElem && del->right == m_lastElem)
-			//		{
-			//			balanceNode = del->parent;
-			//			m_root = del->left;
-			//			del->left->parent = m_lastElem;
-			//			m_lastElem->left = del->left;
-			//			del->left->right = m_lastElem;
-			//		}
-			//		else if (del->left == m_lastElem && del->right && del->right != m_lastElem)
-			//		{
-			//			balanceNode = del->parent;
-			//			m_root = del->right;
-			//			del->right->parent = m_lastElem;
-			//			m_lastElem->right = del->right;
-			//			del->right->left = m_lastElem;
-			//		}
-			//		else
-			//		{
-			//			Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
-			//			m_allocPair.destroy(&del->content);
-			//			m_allocPair.construct(&del->content, maxNode->content);
-			//			return deleteNode(del->left, maxNode->content.first);
-			//		}
-			//	}
-			//	else if ((!del->left || del->left == m_lastElem) && (!del->right || del->right == m_lastElem))
-			//	{
-			//		balanceNode = del->parent;
-			//		Node* linkToParent = 0;
-			//		if (del->left == m_lastElem || del->right == m_lastElem)
-			//		{
-			//			linkToParent = m_lastElem;
-			//			del->content.first <= del->parent->content.first ? m_lastElem->right = del->parent :
-			//				m_lastElem->left = del->parent;
-			//		}
-			//		del->content.first <= del->parent->content.first ? del->parent->left = del->parent :
-			//			del->parent->right = linkToParent;
-			//	}
-			//	else if ((del->left && del->left != m_lastElem) && (!del->right || del->right == m_lastElem))
-			//	{
-			//		balanceNode = del->parent;
-			//		del->content.first <= del->parent->content.first ? del->parent->left = del->left :
-			//			del->parent->right = del->left;
-			//		del->left->parent = del->parent;
-			//		if (del->right == m_lastElem)
-			//		{
-			//			m_lastElem->left = del->left;
-			//			del->left->right = m_lastElem;
-			//		}
-			//	}
-			//	else if ((!del->left || del->left == m_lastElem) && del->right && del->right != m_lastElem)
-			//	{
-			//		balanceNode = del->parent;
-			//		del->content.first <= del->parent->content.first ? del->parent->left = del->right :
-			//			del->parent->right = del->right;
-			//		del->right->parent = del->parent;
-			//		if (del->left == m_lastElem)
-			//		{
-			//			m_lastElem->right = del->right;
-			//			del->right->left = m_lastElem;
-			//		}
-			//	}
-			//	else
-			//	{
-			//		Node* maxNode = Node::searchMaxNode(del->left, m_lastElem);
-			//		m_allocPair.destroy(&del->content);
-			//		m_allocPair.construct(&del->content, maxNode->content);
-			//		return deleteNode(del->left, maxNode->content.first);
-			//	}
 				balanceTheTree(balanceNode);
-				//deallocateNode(del);
 				return true;
 			}
 
@@ -788,7 +622,6 @@ namespace ft
 				x->left = y->right;
 				if (!isSentinel(y->right))
 					y->right->parent = x;
-				//y->left = x;
 				y->parent = x->parent;
 				if (isSentinel(x->parent))
 					m_root = y;
@@ -809,7 +642,6 @@ namespace ft
 				x->right = y->left;
 				if (!isSentinel(y->left))
 					y->left->parent = x;
-				//y->left = x;
 				y->parent = x->parent;
 				if (isSentinel(x->parent))
 					m_root = y;
@@ -822,8 +654,8 @@ namespace ft
 			}
 
 			// Starts from a node in the AVL tree, and will check for this node and all the parent's node
-            //  until root if their balance (height of left and right subtree) is correct. If not, a rotation
-            //  (left or right) around the unbalanced node will occured in order to restore tree's balance.
+            // until root if their balance (height of left and right subtree) is correct. If not, a rotation
+            // (left or right) around the unbalanced node will occured in order to restore tree's balance.
 			void balanceTheTree(Node* node)
 			{
 				while (!isSentinel(node))

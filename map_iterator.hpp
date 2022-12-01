@@ -6,7 +6,7 @@
 /*   By: miarzuma <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 20:54:37 by miarzuma          #+#    #+#             */
-/*   Updated: 2022/12/01 18:58:36 by miarzuma         ###   ########.fr       */
+/*   Updated: 2022/12/01 21:50:17 by miarzuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,7 @@ namespace ft
 
 	// Map iterator.
 	
-	// Key			Type of key elements.
 	// T			Type of mapped elements.
-	// Compare		The predicate used to sort the bynary tree.
-	// Node			The structure used as nodes in the binary tree.
 	// B 			Boolean to indicate if it's an iterator / a const iterator.
 	template < typename T, bool B>
 	class map_iterator
@@ -212,8 +209,6 @@ namespace ft
 			typedef typename ft::iterator_traits<T>::pointer							pointer;
 		private:
 			iterator_type m_base;
-			//nodePtr			m_node;
-			//nodePtr			m_lastElem;
 	
 		public:
 
@@ -225,19 +220,7 @@ namespace ft
 
 			// Copy.
 			template<typename U>
-			rev_map_iterator(const rev_map_iterator<U>& copy) : m_base(copy.base())
-			{
-				//m_node = copy.getNonConstNode();
-				//m_lastElem = copy.getNonConstLastElem();
-			}
-
-			// Convert.
-			//explicit rev_map_iterator(map_iterator<T, true> copy)
-			//{
-			//	//--copy;
-			//	m_node = copy.getNode();
-			//	m_lastElem = copy.getLastElem();
-			//}
+			rev_map_iterator(const rev_map_iterator<U>& copy) : m_base(copy.base()) {}
 
 			// Destroy.
 			~rev_map_iterator() {}
@@ -249,16 +232,9 @@ namespace ft
 				if (this != &assign)
 				{
 					m_base = assign.m_base;
-				//	m_node = assign.m_node;
-				//	m_lastElem = assign.m_lastElem;
 				}
 				return (*this);
 			}
-
-// __ Getters
-
-			//nodePtr getNonConstNode() const { return m_node; }
-			//nodePtr getNonConstLastElem() const { return m_lastElem; }
 
 // __ Operators
 
@@ -266,31 +242,24 @@ namespace ft
 			{ 
 				iterator_type tmp(m_base);
 				--tmp;
-				//std::cout << "\nisNil: " << (m_node == m_lastElem ? "true" : "false") << "\n";
-			//	std::cout << "\nil->parent: " << (m_node->parent->content).first << "\n";
-			//	Node* tmp = Node::decrement(m_node, m_lastElem);
-			//	std::cout << "\nnode: " << tmp->content.first << "\n";
 				return (*tmp); 
 			}
 			pointer operator->() const 
 			{
 				iterator_type tmp(m_base);
 				--tmp;
-				//Node* tmp = Node::decrement(m_node, m_lastElem);
 				return (tmp.operator->());
 			}
 
 			rev_map_iterator& operator++()
 			{
 				--m_base;
-				//m_node = Node::decrement(m_node, m_lastElem);
 				return (*this);
 			}
 
 			rev_map_iterator operator++(int)
 			{
 				rev_map_iterator tmp(*this);
-				//rev_map_iterator tmp(*this);
 				++(*this);
 				return (tmp);
 			}
@@ -336,7 +305,5 @@ namespace ft
 	template <typename T1, typename T2>
 	ft::pair<T1, T2> make_pair(T1 a, T2 b)
 	{ return ft::pair<T1, T2>(a, b); }
-
-	// Lexicographical Compare.
 }
 
